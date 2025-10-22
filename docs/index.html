@@ -428,6 +428,22 @@
             position: relative;
         }
 
+        /* Slide-in Animation für Bot-Nachrichten */
+        .message.slide-in {
+            animation: slideInFromBottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Gruppierte Bot-Nachrichten (innerhalb 10 Sek) haben kleineren Abstand */
         .message.bot.grouped {
             margin-top: -8px;
@@ -2047,7 +2063,7 @@
                         : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
 
                     const thankYouMessage = document.createElement('div');
-                    thankYouMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                    thankYouMessage.className = isGrouped ? 'message bot grouped slide-in' : 'message bot slide-in';
                     thankYouMessage.innerHTML = `
                         <div class="message-avatar">
                             <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
