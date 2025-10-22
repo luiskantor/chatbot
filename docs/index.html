@@ -734,7 +734,11 @@
         .contact-form-fields {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 28px;
+        }
+
+        .contact-form-fields .booking-submit {
+            margin-bottom: 16px;
         }
 
         .form-group {
@@ -759,6 +763,11 @@
         .form-group .error-message {
             margin-top: 8px;
             margin-bottom: -24px;
+        }
+
+        #contactPrivacyError {
+            margin-top: -20px;
+            margin-bottom: 0;
         }
 
         /* Contact Handover Button */
@@ -1110,7 +1119,8 @@
         <div class="contact-form-content">
             <div class="contact-form-inner">
                 <h2 class="contact-form-title">Kontaktieren Sie uns 👋</h2>
-                <p class="contact-form-description">Füllen Sie das Formular aus und unser Team wird sich schnellstmöglich bei Ihnen melden.<br>Oder schreiben Sie eine Mail an <span style="color: #B7483E; font-weight: 600;">info@prime-marketing.com</span></p>
+                <p class="contact-form-description">Füllen Sie das Formular aus und unser Team wird sich schnellstmöglich bei Ihnen melden.</p>
+                <p class="contact-form-description" style="margin-top: 12px;">Oder schreiben Sie eine Mail an <span style="color: #B7483E; font-weight: 600;">info@prime-marketing.com</span></p>
 
                 <form class="contact-form-fields" id="contactFormFields">
                     <div class="form-group">
@@ -1119,7 +1129,7 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="email" class="booking-input" id="contactEmail" placeholder="E-Mail-Adresse">
+                        <input type="email" class="booking-input" id="contactEmail" placeholder="ihre@mail.de">
                         <div class="error-message" id="contactEmailError" style="display: none;">Bitte geben Sie eine gültige E-Mail-Adresse ein</div>
                     </div>
 
