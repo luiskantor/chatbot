@@ -676,6 +676,124 @@
             gap: 4px;
         }
 
+        /* Contact Form Container */
+        .contact-form-container {
+            position: fixed !important;
+            bottom: 130px !important;
+            right: 24px !important;
+            top: auto !important;
+            left: auto !important;
+            width: 450px;
+            height: 680px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        .contact-form-container.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+            visibility: visible;
+        }
+
+        .contact-form-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .contact-form-inner {
+            max-width: 100%;
+        }
+
+        .contact-form-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .contact-form-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .contact-form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .contact-textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        /* Contact Handover Button */
+        .contact-handover-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: #B7483E;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .contact-handover-btn:hover {
+            background: #9d3a32;
+            transform: translateY(-1px);
+        }
+
+        .contact-handover-btn:active {
+            transform: translateY(0);
+        }
+
+        .contact-handover-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         .error-message {
             font-size: 12px;
             color: #ef4444;
@@ -956,6 +1074,67 @@
             </div>
             <div class="privacy-notice">
                 Mit dem Senden akzeptieren Sie unsere <a href="#">Datenschutz</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form Container -->
+    <div class="contact-form-container" id="contactFormContainer">
+        <div class="chatbot-header">
+            <div class="header-left">
+                <button class="icon-button" onclick="closeContactForm()" title="Zurück">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="header-info">
+                    <div class="company-name">kantor lab.</div>
+                    <div class="chatbot-name">Kontaktformular</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-button" onclick="toggleChat()" title="Schließen">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="contact-form-content">
+            <div class="contact-form-inner">
+                <h2 class="contact-form-title">Kontaktieren Sie uns</h2>
+                <p class="contact-form-description">Füllen Sie das Formular aus und unser Team wird sich schnellstmöglich bei Ihnen melden.</p>
+
+                <form class="contact-form-fields" id="contactFormFields">
+                    <div class="form-group">
+                        <label for="contactName" class="form-label">Name</label>
+                        <input type="text" class="booking-input" id="contactName" placeholder="Ihr Name">
+                        <div class="error-message" id="contactNameError" style="display: none;">Bitte geben Sie einen gültigen Namen ein (mind. 2 Zeichen)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail" class="form-label">E-Mail-Adresse</label>
+                        <input type="email" class="booking-input" id="contactEmail" placeholder="ihre@email.de">
+                        <div class="error-message" id="contactEmailError" style="display: none;">Bitte geben Sie eine gültige E-Mail-Adresse ein</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactMessage" class="form-label">Nachricht</label>
+                        <textarea class="booking-input contact-textarea" id="contactMessage" placeholder="Ihre Nachricht..." rows="5"></textarea>
+                        <div class="error-message" id="contactMessageError" style="display: none;">Bitte geben Sie eine Nachricht ein (mind. 10 Zeichen)</div>
+                    </div>
+
+                    <div class="privacy-checkbox-wrapper">
+                        <input type="checkbox" class="privacy-checkbox" id="contactPrivacyCheckbox">
+                        <label for="contactPrivacyCheckbox" class="privacy-checkbox-label">
+                            Ich akzeptiere die <a href="#" onclick="event.preventDefault()">Datenschutzerklärung</a>
+                        </label>
+                    </div>
+                    <div class="error-message" id="contactPrivacyError" style="display: none;">Bitte akzeptieren Sie die Datenschutzerklärung</div>
+
+                    <button type="button" class="booking-submit" id="contactSubmitBtn" onclick="submitContactForm()">Nachricht senden</button>
+                </form>
             </div>
         </div>
     </div>
@@ -1560,6 +1739,271 @@
                         }, 1500);
                     }, 500);
                 }
+            }
+        }
+
+        function handleQuickActionClick(action) {
+            console.log('Quick Action geklickt:', action);
+            const chatMessages = document.getElementById('chatMessages');
+
+            // User-Nachricht unterbricht Bot-Gruppierung
+            lastBotMessageTime = null;
+            lastBotMessageElement = null;
+
+            if (action === 'kontakt') {
+                // User-Nachricht
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.innerHTML = `
+                    <div>
+                        <div class="message-content">
+                            Kontakt aufnehmen
+                        </div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(userMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Typing-Indikator zeigen
+                setTimeout(() => {
+                    showTypingIndicator(chatMessages);
+
+                    setTimeout(() => {
+                        removeTypingIndicator(chatMessages);
+
+                        const now = Date.now();
+                        const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                        if (isGrouped) {
+                            markPreviousBotAsGrouped();
+                        }
+                        lastBotMessageTime = now;
+
+                        // Bot-Nachricht mit Kontakt-Button
+                        const contactMessage = document.createElement('div');
+                        contactMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                        contactMessage.innerHTML = `
+                            <div class="message-avatar">
+                                <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                        <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                        <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                              fill="white" stroke="white" stroke-width="0"/>
+                                        <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                        <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="message-content">
+                                    Gerne! Unser Team wird sich schnellstmöglich bei Ihnen melden.
+                                    <button class="contact-handover-btn" onclick="openContactForm()">
+                                        Kontaktformular öffnen
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="message-timestamp">
+                                    <span>${getCurrentTime()}</span>
+                                    <span class="feedback-separator">·</span>
+                                    <div class="feedback-buttons">
+                                        <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        chatMessages.appendChild(contactMessage);
+                        lastBotMessageElement = contactMessage;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 1500);
+                }, 500);
+            } else if (action === 'termin') {
+                // Simuliere typing "termin" und trigger termin flow
+                const input = document.getElementById('messageInput');
+                input.value = 'termin';
+                sendMessage();
+            }
+        }
+
+        function openContactForm() {
+            console.log('Öffne Kontaktformular...');
+            const chatContainer = document.getElementById('chatContainer');
+            const contactFormContainer = document.getElementById('contactFormContainer');
+
+            // Chat verstecken, Kontaktformular anzeigen
+            chatContainer.classList.remove('open');
+            contactFormContainer.classList.add('open');
+        }
+
+        function closeContactForm() {
+            console.log('Schließe Kontaktformular...');
+            const chatContainer = document.getElementById('chatContainer');
+            const contactFormContainer = document.getElementById('contactFormContainer');
+
+            // Kontaktformular verstecken, Chat anzeigen
+            contactFormContainer.classList.remove('open');
+            chatContainer.classList.add('open');
+        }
+
+        function submitContactForm() {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            const privacyCheckbox = document.getElementById('contactPrivacyCheckbox');
+
+            const nameInput = document.getElementById('contactName');
+            const emailInput = document.getElementById('contactEmail');
+            const messageInput = document.getElementById('contactMessage');
+
+            const nameError = document.getElementById('contactNameError');
+            const emailError = document.getElementById('contactEmailError');
+            const messageError = document.getElementById('contactMessageError');
+            const privacyError = document.getElementById('contactPrivacyError');
+
+            let isValid = true;
+
+            // Name-Validierung
+            if (!validateName(name)) {
+                nameInput.classList.add('error');
+                nameError.style.display = 'block';
+                isValid = false;
+            } else {
+                nameInput.classList.remove('error');
+                nameError.style.display = 'none';
+            }
+
+            // Email-Validierung
+            if (!validateEmail(email)) {
+                emailInput.classList.add('error');
+                emailError.style.display = 'block';
+                isValid = false;
+            } else {
+                emailInput.classList.remove('error');
+                emailError.style.display = 'none';
+            }
+
+            // Message-Validierung (mind. 10 Zeichen)
+            if (message.trim().length < 10) {
+                messageInput.classList.add('error');
+                messageError.style.display = 'block';
+                isValid = false;
+            } else {
+                messageInput.classList.remove('error');
+                messageError.style.display = 'none';
+            }
+
+            // Privacy-Checkbox-Validierung
+            if (!privacyCheckbox.checked) {
+                privacyError.style.display = 'block';
+                isValid = false;
+            } else {
+                privacyError.style.display = 'none';
+            }
+
+            if (isValid) {
+                console.log('Kontaktformular:', { name, email, message });
+
+                // Inputs deaktivieren
+                nameInput.disabled = true;
+                emailInput.disabled = true;
+                messageInput.disabled = true;
+                privacyCheckbox.disabled = true;
+
+                // Submit-Button deaktivieren
+                const submitBtn = document.getElementById('contactSubmitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Gesendet ✓';
+
+                // Nach 2 Sekunden zurück zum Chat mit Bestätigungsnachricht
+                setTimeout(() => {
+                    closeContactForm();
+
+                    // Formular zurücksetzen
+                    setTimeout(() => {
+                        nameInput.value = '';
+                        emailInput.value = '';
+                        messageInput.value = '';
+                        privacyCheckbox.checked = false;
+
+                        nameInput.disabled = false;
+                        emailInput.disabled = false;
+                        messageInput.disabled = false;
+                        privacyCheckbox.disabled = false;
+
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Nachricht senden';
+                    }, 500);
+
+                    // Bestätigungsnachricht im Chat hinzufügen
+                    const chatMessages = document.getElementById('chatMessages');
+
+                    setTimeout(() => {
+                        showTypingIndicator(chatMessages);
+
+                        setTimeout(() => {
+                            removeTypingIndicator(chatMessages);
+
+                            const now = Date.now();
+                            const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                            if (isGrouped) {
+                                markPreviousBotAsGrouped();
+                            }
+                            lastBotMessageTime = now;
+
+                            const confirmMessage = document.createElement('div');
+                            confirmMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                            confirmMessage.innerHTML = `
+                                <div class="message-avatar">
+                                    <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                            <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                            <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                                  fill="white" stroke="white" stroke-width="0"/>
+                                            <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                            <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="message-content">
+                                        Vielen Dank für Ihre Nachricht! Unser Team wird sich schnellstmöglich bei Ihnen unter <span style="color: #B7483E;">${email}</span> melden.
+                                    </div>
+                                    <div class="message-timestamp">
+                                        <span>${getCurrentTime()}</span>
+                                        <span class="feedback-separator">·</span>
+                                        <div class="feedback-buttons">
+                                            <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                                </svg>
+                                            </button>
+                                            <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            chatMessages.appendChild(confirmMessage);
+                            lastBotMessageElement = confirmMessage;
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 1500);
+                    }, 500);
+                }, 2000);
             }
         }
 
