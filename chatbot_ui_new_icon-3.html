@@ -444,6 +444,33 @@
             }
         }
 
+        /* Fade-in Animation für Typing Indicator */
+        #typing-indicator {
+            animation: fadeIn 0.3s ease;
+        }
+
+        #typing-indicator.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
         /* Gruppierte Bot-Nachrichten (innerhalb 10 Sek) haben kleineren Abstand */
         .message.bot.grouped {
             margin-top: -8px;
@@ -1464,7 +1491,10 @@
         function removeTypingIndicator(chatMessages) {
             const indicator = document.getElementById('typing-indicator');
             if (indicator) {
-                indicator.remove();
+                indicator.classList.add('fade-out');
+                setTimeout(() => {
+                    indicator.remove();
+                }, 300); // Match fadeOut animation duration
             }
         }
 
@@ -2050,21 +2080,23 @@
                 setTimeout(() => {
                     removeTypingIndicator(chatMessages);
 
-                    const now = Date.now();
-                    const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-                    if (isGrouped) {
-                        markPreviousBotAsGrouped();
-                    }
-                    lastBotMessageTime = now;
+                    // Warte auf fade-out Animation bevor Bot-Nachricht erscheint
+                    setTimeout(() => {
+                        const now = Date.now();
+                        const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                        if (isGrouped) {
+                            markPreviousBotAsGrouped();
+                        }
+                        lastBotMessageTime = now;
 
-                    // Dankes-Nachricht basierend auf Response
-                    const responseText = response === 'yes'
-                        ? 'Vielen Dank für Ihr Feedback! Es freut uns, dass wir Ihnen helfen konnten.'
-                        : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
+                        // Dankes-Nachricht basierend auf Response
+                        const responseText = response === 'yes'
+                            ? 'Vielen Dank für Ihr Feedback! Es freut uns, dass wir Ihnen helfen konnten.'
+                            : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
 
-                    const thankYouMessage = document.createElement('div');
-                    thankYouMessage.className = isGrouped ? 'message bot grouped slide-in' : 'message bot slide-in';
-                    thankYouMessage.innerHTML = `
+                        const thankYouMessage = document.createElement('div');
+                        thankYouMessage.className = isGrouped ? 'message bot grouped slide-in' : 'message bot slide-in';
+                        thankYouMessage.innerHTML = `
                         <div class="message-avatar">
                             <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
@@ -2098,9 +2130,10 @@
                             </div>
                         </div>
                     `;
-                    chatMessages.appendChild(thankYouMessage);
-                    lastBotMessageElement = thankYouMessage;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                        chatMessages.appendChild(thankYouMessage);
+                        lastBotMessageElement = thankYouMessage;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 300); // Warte auf fade-out der typing indicator
                 }, 1500);
             }, 500);
         }
