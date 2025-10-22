@@ -709,7 +709,7 @@
 
         .contact-form-content {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: visible;
             padding: 24px;
         }
 
@@ -770,6 +770,10 @@
             margin-bottom: 0;
         }
 
+        .contact-form-fields .privacy-checkbox-wrapper {
+            margin-top: -12px;
+        }
+
         /* Contact Handover Button */
         .contact-handover-btn {
             width: 100%;
@@ -782,12 +786,15 @@
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             margin-top: 16px;
+            opacity: 1;
+            max-height: 48px;
+            overflow: hidden;
         }
 
         .contact-handover-btn:hover {
@@ -807,6 +814,14 @@
             stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
+        }
+
+        .contact-handover-btn.hide {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
         }
 
         .error-message {
@@ -2014,6 +2029,12 @@
                             chatMessages.appendChild(confirmMessage);
                             lastBotMessageElement = confirmMessage;
                             chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                            // "Kontaktformular öffnen" Button verstecken
+                            const contactHandoverBtn = document.querySelector('.contact-handover-btn');
+                            if (contactHandoverBtn) {
+                                contactHandoverBtn.classList.add('hide');
+                            }
                         }, 1500);
                     }, 500);
                 }, 2000);
