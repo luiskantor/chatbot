@@ -866,6 +866,57 @@
             }
         }
 
+        /* Final Feedback Message */
+        .feedback-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .feedback-message-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .feedback-message-subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .feedback-response-btn {
+            padding: 10px 24px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .feedback-response-btn:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+
+        .feedback-response-btn:active {
+            transform: translateY(0);
+        }
+
         .date-divider {
             display: flex;
             align-items: center;
@@ -1658,6 +1709,9 @@
                         chatMessages.appendChild(confirmMessage);
                         lastBotMessageElement = confirmMessage;
                         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        // Final Feedback nach Termin-Buchung anzeigen
+                        showFinalFeedback();
                     }, 1500);
                 }, 500);
             }
@@ -1768,6 +1822,22 @@
                             chatMessages.scrollTop = chatMessages.scrollHeight;
                         }, 1500);
                     }, 500);
+                }
+
+                // Prüfe auf Trigger-Wörter für Final Feedback
+                const feedbackTriggerWords = [
+                    'danke', 'dankeschön', 'vielen dank', 'super', 'perfekt',
+                    'toll', 'prima', 'geholfen', 'hilft', 'hilfreich',
+                    'erledigt', 'reicht', 'passt', 'gut', 'alles klar',
+                    'okay', 'ok', 'genug', 'fertig', 'tschüss', 'bis dann',
+                    'auf wiedersehen', 'ciao', 'bye', 'danke dir'
+                ];
+
+                const messageLower = message.toLowerCase();
+                const hasTriggerWord = feedbackTriggerWords.some(word => messageLower.includes(word));
+
+                if (hasTriggerWord) {
+                    showFinalFeedback();
                 }
             }
         }
@@ -1885,6 +1955,110 @@
             // Kontaktformular verstecken, Chat anzeigen
             contactFormContainer.classList.remove('open');
             chatContainer.classList.add('open');
+        }
+
+        // Tracking ob Feedback bereits angezeigt wurde
+        let feedbackShown = false;
+
+        function showFinalFeedback() {
+            if (feedbackShown) {
+                return; // Feedback nur einmal anzeigen
+            }
+            feedbackShown = true;
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            setTimeout(() => {
+                const feedbackMessage = document.createElement('div');
+                feedbackMessage.className = 'feedback-message';
+                feedbackMessage.innerHTML = `
+                    <div class="feedback-message-title">Wurde Ihr Anliegen erfolgreich gelöst?</div>
+                    <div class="feedback-message-subtitle">Sie können trotzdem weiter chatten.</div>
+                    <div class="feedback-buttons">
+                        <button class="feedback-response-btn" onclick="handleFinalFeedback('yes')">Ja</button>
+                        <button class="feedback-response-btn" onclick="handleFinalFeedback('no')">Nein</button>
+                    </div>
+                `;
+                chatMessages.appendChild(feedbackMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
+        function handleFinalFeedback(response) {
+            console.log('Final Feedback:', response);
+
+            const chatMessages = document.getElementById('chatMessages');
+
+            // Feedback-Nachricht entfernen
+            const feedbackMessage = document.querySelector('.feedback-message');
+            if (feedbackMessage) {
+                feedbackMessage.style.opacity = '0';
+                feedbackMessage.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    feedbackMessage.remove();
+                }, 300);
+            }
+
+            // Typing-Indikator zeigen
+            setTimeout(() => {
+                showTypingIndicator(chatMessages);
+
+                setTimeout(() => {
+                    removeTypingIndicator(chatMessages);
+
+                    const now = Date.now();
+                    const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                    if (isGrouped) {
+                        markPreviousBotAsGrouped();
+                    }
+                    lastBotMessageTime = now;
+
+                    // Dankes-Nachricht basierend auf Response
+                    const responseText = response === 'yes'
+                        ? 'Vielen Dank für Ihr Feedback! Es freut uns, dass wir Ihnen helfen konnten.'
+                        : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
+
+                    const thankYouMessage = document.createElement('div');
+                    thankYouMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                    thankYouMessage.innerHTML = `
+                        <div class="message-avatar">
+                            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                    <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                    <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                          fill="white" stroke="white" stroke-width="0"/>
+                                    <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                    <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="message-content">
+                                ${responseText}
+                            </div>
+                            <div class="message-timestamp">
+                                <span>${getCurrentTime()}</span>
+                                <span class="feedback-separator">·</span>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.appendChild(thankYouMessage);
+                    lastBotMessageElement = thankYouMessage;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1500);
+            }, 500);
         }
 
         function submitContactForm() {
