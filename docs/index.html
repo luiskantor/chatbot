@@ -602,16 +602,17 @@
 
         .privacy-checkbox-wrapper {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 8px;
             font-size: 12px;
             color: #6b7280;
+            margin-top: 4px;
+            margin-bottom: 4px;
         }
 
         .privacy-checkbox {
             width: 18px;
             height: 18px;
-            margin-top: 1px;
             cursor: pointer;
             flex-shrink: 0;
             accent-color: #B7483E;
@@ -1425,7 +1426,7 @@
                             </div>
                             <div>
                                 <div class="message-content">
-                                    Vielen Dank! Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungsmail an ${email}.
+                                    Vielen Dank! Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungsmail an <span style="text-decoration: underline;">${email}</span>.
                                 </div>
                                 <div class="message-timestamp">
                                     <span>${getCurrentTime()}</span>
