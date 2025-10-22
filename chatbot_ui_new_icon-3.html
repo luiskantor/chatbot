@@ -740,7 +740,7 @@
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 0px;
         }
 
         .form-label {
@@ -750,9 +750,15 @@
         }
 
         .contact-textarea {
-            resize: vertical;
-            min-height: 100px;
+            resize: none;
+            height: 120px;
+            overflow-y: auto;
             font-family: inherit;
+        }
+
+        .form-group .error-message {
+            margin-top: 8px;
+            margin-bottom: -24px;
         }
 
         /* Contact Handover Button */
@@ -1103,25 +1109,22 @@
 
         <div class="contact-form-content">
             <div class="contact-form-inner">
-                <h2 class="contact-form-title">Kontaktieren Sie uns</h2>
-                <p class="contact-form-description">Füllen Sie das Formular aus und unser Team wird sich schnellstmöglich bei Ihnen melden.</p>
+                <h2 class="contact-form-title">Kontaktieren Sie uns 👋</h2>
+                <p class="contact-form-description">Füllen Sie das Formular aus und unser Team wird sich schnellstmöglich bei Ihnen melden.<br>Oder schreiben Sie eine Mail an <span style="color: #B7483E; font-weight: 600;">info@prime-marketing.com</span></p>
 
                 <form class="contact-form-fields" id="contactFormFields">
                     <div class="form-group">
-                        <label for="contactName" class="form-label">Name</label>
-                        <input type="text" class="booking-input" id="contactName" placeholder="Ihr Name">
+                        <input type="text" class="booking-input" id="contactName" placeholder="Name">
                         <div class="error-message" id="contactNameError" style="display: none;">Bitte geben Sie einen gültigen Namen ein (mind. 2 Zeichen)</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="contactEmail" class="form-label">E-Mail-Adresse</label>
-                        <input type="email" class="booking-input" id="contactEmail" placeholder="ihre@email.de">
+                        <input type="email" class="booking-input" id="contactEmail" placeholder="E-Mail-Adresse">
                         <div class="error-message" id="contactEmailError" style="display: none;">Bitte geben Sie eine gültige E-Mail-Adresse ein</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="contactMessage" class="form-label">Nachricht</label>
-                        <textarea class="booking-input contact-textarea" id="contactMessage" placeholder="Ihre Nachricht..." rows="5"></textarea>
+                        <textarea class="booking-input contact-textarea" id="contactMessage" placeholder="Ihre Nachricht..."></textarea>
                         <div class="error-message" id="contactMessageError" style="display: none;">Bitte geben Sie eine Nachricht ein (mind. 10 Zeichen)</div>
                     </div>
 
