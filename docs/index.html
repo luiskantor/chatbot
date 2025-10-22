@@ -426,6 +426,7 @@
             align-items: flex-end;
             max-width: 90%;
             position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Slide-in Animation für Bot-Nachrichten */
@@ -436,7 +437,7 @@
         @keyframes slideInFromBottom {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -447,6 +448,7 @@
         /* Fade-in Animation für Typing Indicator */
         #typing-indicator {
             animation: fadeIn 0.3s ease;
+            min-height: 52px; /* Verhindert Layout-Shift */
         }
 
         #typing-indicator.fade-out {
@@ -456,18 +458,22 @@
         @keyframes fadeIn {
             from {
                 opacity: 0;
+                transform: scale(0.95);
             }
             to {
                 opacity: 1;
+                transform: scale(1);
             }
         }
 
         @keyframes fadeOut {
             from {
                 opacity: 1;
+                transform: scale(1);
             }
             to {
                 opacity: 0;
+                transform: scale(0.95);
             }
         }
 
@@ -554,6 +560,7 @@
             justify-content: center;
             flex-shrink: 0;
             margin-bottom: 26px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .message-avatar svg {
@@ -573,6 +580,7 @@
             font-size: 14px;
             line-height: 1.5;
             color: #374151;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .message.user .message-content {
@@ -1498,6 +1506,71 @@
             }
         }
 
+        // Neue Funktion: Transformiert Typing Indicator nahtlos in Bot-Nachricht
+        function transformTypingIndicatorToMessage(messageContentHTML, isGrouped, callback) {
+            const indicator = document.getElementById('typing-indicator');
+            if (!indicator) return;
+
+            const messageContent = indicator.querySelector('.message-content');
+            if (!messageContent) return;
+
+            // 1. Fade out des Typing-Indikators Content
+            messageContent.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+            messageContent.style.opacity = '0';
+            messageContent.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                // 2. Entferne altes message-content und erstelle neue Struktur
+                const avatar = indicator.querySelector('.message-avatar');
+
+                // Erstelle neuen wrapper mit korrekter Struktur
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <div class="message-content" style="opacity: 0; transform: scale(0.95); transition: opacity 0.3s ease, transform 0.3s ease;">
+                        ${messageContentHTML}
+                    </div>
+                    <div class="message-timestamp">
+                        <span>${getCurrentTime()}</span>
+                        <span class="feedback-separator">·</span>
+                        <div class="feedback-buttons">
+                            <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                </svg>
+                            </button>
+                            <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // 3. Ersetze alte Struktur mit neuer
+                messageContent.remove();
+                indicator.appendChild(wrapper);
+
+                // 4. Entferne typing-indicator ID und aktualisiere Klassen
+                indicator.removeAttribute('id');
+                indicator.className = isGrouped ? 'message bot grouped' : 'message bot';
+
+                // 5. Fade in der neuen Nachricht
+                const newMessageContent = indicator.querySelector('.message-content');
+                if (newMessageContent) {
+                    setTimeout(() => {
+                        newMessageContent.style.opacity = '1';
+                        newMessageContent.style.transform = 'scale(1)';
+                    }, 50);
+                }
+
+                // 6. Callback für weitere Aktionen
+                if (callback) {
+                    callback(indicator);
+                }
+            }, 200); // Warte auf fade-out
+        }
+
         // Variable um zu tracken ob Chat schon geöffnet wurde
         let chatWasOpened = false;
         let userHasWritten = false;
@@ -2078,62 +2151,23 @@
                 showTypingIndicator(chatMessages);
 
                 setTimeout(() => {
-                    removeTypingIndicator(chatMessages);
+                    const now = Date.now();
+                    const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                    if (isGrouped) {
+                        markPreviousBotAsGrouped();
+                    }
+                    lastBotMessageTime = now;
 
-                    // Warte auf fade-out Animation bevor Bot-Nachricht erscheint
-                    setTimeout(() => {
-                        const now = Date.now();
-                        const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-                        if (isGrouped) {
-                            markPreviousBotAsGrouped();
-                        }
-                        lastBotMessageTime = now;
+                    // Dankes-Nachricht basierend auf Response
+                    const responseText = response === 'yes'
+                        ? 'Vielen Dank für Ihr Feedback! Es freut uns, dass wir Ihnen helfen konnten.'
+                        : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
 
-                        // Dankes-Nachricht basierend auf Response
-                        const responseText = response === 'yes'
-                            ? 'Vielen Dank für Ihr Feedback! Es freut uns, dass wir Ihnen helfen konnten.'
-                            : 'Vielen Dank für Ihr Feedback. Unser Team wird sich mit Ihnen in Verbindung setzen, um Ihr Anliegen weiter zu klären.';
-
-                        const thankYouMessage = document.createElement('div');
-                        thankYouMessage.className = isGrouped ? 'message bot grouped slide-in' : 'message bot slide-in';
-                        thankYouMessage.innerHTML = `
-                        <div class="message-avatar">
-                            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
-                                    <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                                    <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
-                                          fill="white" stroke="white" stroke-width="0"/>
-                                    <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
-                                    <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
-                                </g>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="message-content">
-                                ${responseText}
-                            </div>
-                            <div class="message-timestamp">
-                                <span>${getCurrentTime()}</span>
-                                <span class="feedback-separator">·</span>
-                                <div class="feedback-buttons">
-                                    <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                        chatMessages.appendChild(thankYouMessage);
-                        lastBotMessageElement = thankYouMessage;
+                    // Transformiere Typing Indicator nahtlos in Bot-Nachricht
+                    transformTypingIndicatorToMessage(responseText, isGrouped, (transformedMessage) => {
+                        lastBotMessageElement = transformedMessage;
                         chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }, 300); // Warte auf fade-out der typing indicator
+                    });
                 }, 1500);
             }, 500);
         }
