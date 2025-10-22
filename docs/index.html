@@ -446,13 +446,55 @@
             font-size: 11px;
             color: #9ca3af;
             opacity: 0.6;
-            margin-top: 4px;
+            margin-top: 6px;
             text-align: right;
             font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .message.bot .message-timestamp {
             text-align: left;
+            justify-content: flex-start;
+        }
+
+        .message.user .message-timestamp {
+            justify-content: flex-end;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .feedback-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feedback-btn:hover {
+            opacity: 1;
+        }
+
+        .feedback-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: #9ca3af;
+        }
+
+        .feedback-separator {
+            color: #9ca3af;
+            opacity: 0.6;
+            margin: 0 2px;
         }
 
         .message.user {
@@ -855,7 +897,22 @@
                         <div class="message-content">
                             Hallo! Wie kann ich Ihnen heute helfen?
                         </div>
-                        <div class="message-timestamp">${getCurrentTime()}</div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                            <span class="feedback-separator">·</span>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                    </svg>
+                                </button>
+                                <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -913,7 +970,22 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="message-timestamp">${getCurrentTime()}</div>
+                            <div class="message-timestamp">
+                                <span>${getCurrentTime()}</span>
+                                <span class="feedback-separator">·</span>
+                                <div class="feedback-buttons">
+                                    <button class="feedback-btn" onclick="handleFeedback('up')" title="Hilfreich">
+                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="feedback-btn" onclick="handleFeedback('down')" title="Nicht hilfreich">
+                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `;
                     chatMessages.appendChild(quickActionsMsg);
@@ -1036,6 +1108,12 @@
             console.log('Quick Action:', action);
         }
 
+        function handleFeedback(type) {
+            console.log('Feedback:', type);
+            // Hier kann später die Feedback-Logik implementiert werden
+            // z.B. an Backend senden
+        }
+
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
@@ -1059,7 +1137,9 @@
                         <div class="message-content">
                             ${message}
                         </div>
-                        <div class="message-timestamp">${getCurrentTime()}</div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                        </div>
                     </div>
                 `;
 
