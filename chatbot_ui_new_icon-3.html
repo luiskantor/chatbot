@@ -872,8 +872,14 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 20px;
+            padding: 16px;
             margin: 16px 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .feedback-message.hiding {
+            opacity: 0;
+            transform: scale(0.95);
         }
 
         .feedback-message-title {
@@ -897,7 +903,7 @@
         .feedback-response-btn {
             padding: 10px 24px;
             background: #f3f4f6;
-            border: 1px solid #e5e7eb;
+            border: none;
             border-radius: 10px;
             font-size: 13px;
             font-weight: 500;
@@ -905,16 +911,28 @@
             cursor: pointer;
             transition: all 0.2s ease;
             font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .feedback-response-btn:hover {
             background: #e5e7eb;
-            border-color: #d1d5db;
             transform: translateY(-1px);
         }
 
         .feedback-response-btn:active {
             transform: translateY(0);
+        }
+
+        .feedback-response-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .date-divider {
@@ -1975,8 +1993,19 @@
                     <div class="feedback-message-title">Wurde Ihr Anliegen erfolgreich gelöst?</div>
                     <div class="feedback-message-subtitle">Sie können trotzdem weiter chatten.</div>
                     <div class="feedback-buttons">
-                        <button class="feedback-response-btn" onclick="handleFinalFeedback('yes')">Ja</button>
-                        <button class="feedback-response-btn" onclick="handleFinalFeedback('no')">Nein</button>
+                        <button class="feedback-response-btn" onclick="handleFinalFeedback('yes')">
+                            <svg viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Ja
+                        </button>
+                        <button class="feedback-response-btn" onclick="handleFinalFeedback('no')">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Nein
+                        </button>
                     </div>
                 `;
                 chatMessages.appendChild(feedbackMessage);
@@ -1989,14 +2018,13 @@
 
             const chatMessages = document.getElementById('chatMessages');
 
-            // Feedback-Nachricht entfernen
+            // Feedback-Nachricht mit smooth Animation entfernen
             const feedbackMessage = document.querySelector('.feedback-message');
             if (feedbackMessage) {
-                feedbackMessage.style.opacity = '0';
-                feedbackMessage.style.transition = 'opacity 0.3s ease';
+                feedbackMessage.classList.add('hiding');
                 setTimeout(() => {
                     feedbackMessage.remove();
-                }, 300);
+                }, 400);
             }
 
             // Typing-Indikator zeigen
