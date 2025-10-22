@@ -433,8 +433,13 @@
             margin-top: -8px;
         }
 
-        .message.bot.grouped .message-avatar {
+        /* Frühere Nachrichten in einer Gruppe verstecken Avatar und Timestamp */
+        .message.bot.grouped-previous .message-avatar {
             visibility: hidden;
+        }
+
+        .message.bot.grouped-previous .message-timestamp {
+            display: none;
         }
 
         .message-timestamp {
@@ -814,6 +819,14 @@
 
         // Tracking für letzte Bot-Nachricht Zeit
         let lastBotMessageTime = null;
+        let lastBotMessageElement = null;
+
+        // Hilfsfunktion: Markiert vorherige Bot-Nachricht als Teil einer Gruppe
+        function markPreviousBotAsGrouped() {
+            if (lastBotMessageElement) {
+                lastBotMessageElement.classList.add('grouped-previous');
+            }
+        }
 
         // Bei jedem Laden der Seite neuen Chat starten
         window.addEventListener('load', function() {
@@ -849,7 +862,10 @@
 
             // Datum setzen
             displayCurrentDate();
-            
+
+            // Speichere Referenz zur ersten Bot-Nachricht
+            lastBotMessageElement = chatMessages.querySelector('.message.bot');
+
             // Loading-Indikator für zweite Nachricht
             setTimeout(() => {
                 showTypingIndicator(chatMessages);
@@ -860,6 +876,12 @@
                     
                     const now = Date.now();
                     const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+
+                    // Wenn gruppiert, markiere vorherige Bot-Nachricht
+                    if (isGrouped) {
+                        markPreviousBotAsGrouped();
+                    }
+
                     lastBotMessageTime = now;
 
                     const quickActionsMsg = document.createElement('div');
@@ -895,6 +917,7 @@
                         </div>
                     `;
                     chatMessages.appendChild(quickActionsMsg);
+                    lastBotMessageElement = quickActionsMsg;
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }, 2000);
             }, 800);
@@ -1023,6 +1046,7 @@
 
                 // User-Nachricht unterbricht Bot-Nachrichten-Gruppierung
                 lastBotMessageTime = null;
+                lastBotMessageElement = null;
 
                 // Nachricht zum Chat hinzufügen
                 const chatMessages = document.getElementById('chatMessages');
