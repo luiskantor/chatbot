@@ -428,12 +428,22 @@
             position: relative;
         }
 
+        /* Gruppierte Bot-Nachrichten (innerhalb 10 Sek) haben kleineren Abstand */
+        .message.bot.grouped {
+            margin-top: -8px;
+        }
+
+        .message.bot.grouped .message-avatar {
+            visibility: hidden;
+        }
+
         .message-timestamp {
-            font-size: 10px;
+            font-size: 11px;
             color: #9ca3af;
-            opacity: 0.7;
+            opacity: 0.6;
             margin-top: 4px;
             text-align: right;
+            font-weight: 400;
         }
 
         .message.bot .message-timestamp {
@@ -741,21 +751,25 @@
                     <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
                             <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                            <path d="M 19 26 Q 19 26, 19.8 26.8 L 24 31 Q 24.5 31.5, 25 31 L 29.2 26.8 Q 30 26, 30 26 Z" 
+                            <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
                                   fill="white" stroke="white" stroke-width="0"/>
                             <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
                             <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
                         </g>
                     </svg>
                 </div>
-                <div class="message-content">
-                    Hallo! Wie kann ich Ihnen heute helfen?
+                <div>
+                    <div class="message-content">
+                        Hallo! Wie kann ich Ihnen heute helfen?
+                    </div>
                 </div>
             </div>
 
             <div class="message user">
-                <div class="message-content">
-                    Ich möchte einen Termin buchen.
+                <div>
+                    <div class="message-content">
+                        Ich möchte einen Termin buchen.
+                    </div>
                 </div>
             </div>
         </div>
@@ -790,6 +804,17 @@
             dateDiv.textContent = dateString;
         }
 
+        // Uhrzeit formatieren (HH:MM)
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Tracking für letzte Bot-Nachricht Zeit
+        let lastBotMessageTime = null;
+
         // Bei jedem Laden der Seite neuen Chat starten
         window.addEventListener('load', function() {
             console.log('Seite geladen, initialisiere Chat...');
@@ -797,27 +822,31 @@
             
             // Chat-Inhalt zurücksetzen - Datum + erste Bot-Nachricht
             const chatMessages = document.getElementById('chatMessages');
+            lastBotMessageTime = Date.now();
             chatMessages.innerHTML = `
                 <div class="date-divider" id="dateDisplay"></div>
-                
+
                 <div class="message bot">
                     <div class="message-avatar">
                         <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
                                 <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                                <path d="M 19 26 Q 19 26, 19.8 26.8 L 24 31 Q 24.5 31.5, 25 31 L 29.2 26.8 Q 30 26, 30 26 Z" 
+                                <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
                                       fill="white" stroke="white" stroke-width="0"/>
                                 <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
                                 <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
                             </g>
                         </svg>
                     </div>
-                    <div class="message-content">
-                        Hallo! Wie kann ich Ihnen heute helfen?
+                    <div>
+                        <div class="message-content">
+                            Hallo! Wie kann ich Ihnen heute helfen?
+                        </div>
+                        <div class="message-timestamp">${getCurrentTime()}</div>
                     </div>
                 </div>
             `;
-            
+
             // Datum setzen
             displayCurrentDate();
             
@@ -829,33 +858,40 @@
                 setTimeout(() => {
                     removeTypingIndicator(chatMessages);
                     
+                    const now = Date.now();
+                    const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                    lastBotMessageTime = now;
+
                     const quickActionsMsg = document.createElement('div');
-                    quickActionsMsg.className = 'message bot';
+                    quickActionsMsg.className = isGrouped ? 'message bot grouped' : 'message bot';
                     quickActionsMsg.innerHTML = `
                         <div class="message-avatar">
                             <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
                                     <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                                    <path d="M 19 26 Q 19 26, 19.8 26.8 L 24 31 Q 24.5 31.5, 25 31 L 29.2 26.8 Q 30 26, 30 26 Z" 
+                                    <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
                                           fill="white" stroke="white" stroke-width="0"/>
                                     <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
                                     <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
                                 </g>
                             </svg>
                         </div>
-                        <div class="message-content">
-                            Falls Sie eine der folgenden Aktionen durchführen möchten, können Sie diese einfach anklicken:
-                            <div class="quick-actions-message">
-                                <button class="quick-action-chat-btn" onclick="handleQuickActionClick('termin')">
-                                    Termin vereinbaren
-                                </button>
-                                <button class="quick-action-chat-btn" onclick="handleQuickActionClick('produkte')">
-                                    Übersicht zu Produkten
-                                </button>
-                                <button class="quick-action-chat-btn" onclick="handleQuickActionClick('kontakt')">
-                                    Kontakt aufnehmen
-                                </button>
+                        <div>
+                            <div class="message-content">
+                                Falls Sie eine der folgenden Aktionen durchführen möchten, können Sie diese einfach anklicken:
+                                <div class="quick-actions-message">
+                                    <button class="quick-action-chat-btn" onclick="handleQuickActionClick('termin')">
+                                        Termin vereinbaren
+                                    </button>
+                                    <button class="quick-action-chat-btn" onclick="handleQuickActionClick('produkte')">
+                                        Übersicht zu Produkten
+                                    </button>
+                                    <button class="quick-action-chat-btn" onclick="handleQuickActionClick('kontakt')">
+                                        Kontakt aufnehmen
+                                    </button>
+                                </div>
                             </div>
+                            <div class="message-timestamp">${getCurrentTime()}</div>
                         </div>
                     `;
                     chatMessages.appendChild(quickActionsMsg);
@@ -887,15 +923,18 @@
         });
 
         function showTypingIndicator(chatMessages) {
+            const now = Date.now();
+            const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+
             const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot';
+            typingDiv.className = isGrouped ? 'message bot grouped' : 'message bot';
             typingDiv.id = 'typing-indicator';
             typingDiv.innerHTML = `
                 <div class="message-avatar">
                     <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
                             <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                            <path d="M 19 26 Q 19 26, 19.8 26.8 L 24 31 Q 24.5 31.5, 25 31 L 29.2 26.8 Q 30 26, 30 26 Z" 
+                            <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
                                   fill="white" stroke="white" stroke-width="0"/>
                             <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
                             <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
@@ -977,29 +1016,35 @@
         function sendMessage() {
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
-            
+
             if (message) {
                 // User hat geschrieben - Flag setzen
                 userHasWritten = true;
-                
+
+                // User-Nachricht unterbricht Bot-Nachrichten-Gruppierung
+                lastBotMessageTime = null;
+
                 // Nachricht zum Chat hinzufügen
                 const chatMessages = document.getElementById('chatMessages');
-                
+
                 // User-Nachricht erstellen
                 const userMessage = document.createElement('div');
                 userMessage.className = 'message user';
                 userMessage.innerHTML = `
-                    <div class="message-content">
-                        ${message}
+                    <div>
+                        <div class="message-content">
+                            ${message}
+                        </div>
+                        <div class="message-timestamp">${getCurrentTime()}</div>
                     </div>
                 `;
-                
+
                 chatMessages.appendChild(userMessage);
-                
+
                 // Input leeren
                 input.value = '';
                 input.style.height = 'auto';
-                
+
                 // Zum Ende scrollen
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
