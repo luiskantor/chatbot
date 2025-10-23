@@ -966,13 +966,13 @@
 
         .feedback-input-container.show {
             opacity: 1;
-            max-height: 300px;
+            max-height: 400px;
         }
 
         .feedback-input-label {
             font-size: 13px;
-            font-weight: 500;
-            color: #6b7280;
+            font-weight: 400;
+            color: #000000;
             margin-bottom: 8px;
             display: block;
         }
@@ -980,13 +980,14 @@
         .feedback-input-wrapper {
             position: relative;
             display: flex;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .feedback-input {
             width: 100%;
             min-height: 100px;
-            padding: 12px 50px 12px 16px;
+            padding: 12px 16px;
             background: #f9fafb;
             border: none;
             border-radius: 10px;
@@ -1008,33 +1009,41 @@
         }
 
         .feedback-submit-btn {
-            position: absolute;
-            right: 10px;
-            bottom: 10px;
-            padding: 8px 12px;
+            width: 100%;
+            padding: 10px 16px;
             background: #e5e7eb;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            font-family: inherit;
         }
 
-        .feedback-submit-btn:hover {
+        .feedback-submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .feedback-submit-btn:not(:disabled):hover {
             background: #d1d5db;
             transform: translateY(-1px);
         }
 
-        .feedback-submit-btn:active {
+        .feedback-submit-btn:not(:disabled):active {
             transform: translateY(0);
         }
 
         .feedback-submit-btn svg {
             width: 14px;
             height: 14px;
-            stroke: #6b7280;
+            stroke: currentColor;
             fill: none;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -2296,12 +2305,13 @@
                     <div class="feedback-input-container" id="feedbackInputContainer">
                         <label class="feedback-input-label">Was hat Ihnen nicht gefallen? (optional)</label>
                         <div class="feedback-input-wrapper">
-                            <textarea class="feedback-input" id="feedbackInput" placeholder="Beschreiben Sie, was Ihnen nicht gefallen hat..."></textarea>
-                            <button class="feedback-submit-btn" onclick="submitNegativeFeedback()" title="Absenden">
+                            <textarea class="feedback-input" id="feedbackInput" placeholder="Beschreiben Sie, was Ihnen nicht gefallen hat..." oninput="validateFeedbackInput()"></textarea>
+                            <button class="feedback-submit-btn" id="feedbackSubmitBtn" onclick="submitNegativeFeedback()" disabled title="Mindestens 10 Zeichen erforderlich">
                                 <svg viewBox="0 0 24 24">
                                     <line x1="5" y1="12" x2="19" y2="12"/>
                                     <polyline points="12 5 19 12 12 19"/>
                                 </svg>
+                                Abschicken
                             </button>
                         </div>
                     </div>
@@ -2332,11 +2342,16 @@
                         }
                     }, 300);
 
-                    // Buttons deaktivieren
+                    // Buttons deaktivieren und "Nein" als pressed markieren
                     const buttons = document.querySelectorAll('.feedback-response-btn');
                     buttons.forEach(btn => {
+                        if (btn.textContent.trim().includes('Nein')) {
+                            btn.style.background = '#d1d5db'; // Darker gray for pressed state
+                            btn.style.opacity = '1';
+                        } else {
+                            btn.style.opacity = '0.5';
+                        }
                         btn.disabled = true;
-                        btn.style.opacity = '0.5';
                         btn.style.cursor = 'not-allowed';
                     });
                 }
@@ -2345,6 +2360,19 @@
 
             // Bei "Ja": Feedback-Nachricht schließen
             proceedWithFeedbackResponse(response);
+        }
+
+        function validateFeedbackInput() {
+            const feedbackInput = document.getElementById('feedbackInput');
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            if (feedbackInput && submitBtn) {
+                const textLength = feedbackInput.value.trim().length;
+                submitBtn.disabled = textLength < 10;
+                submitBtn.title = textLength < 10
+                    ? 'Mindestens 10 Zeichen erforderlich'
+                    : 'Absenden';
+            }
         }
 
         function submitNegativeFeedback() {

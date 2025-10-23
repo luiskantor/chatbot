@@ -2332,11 +2332,16 @@
                         }
                     }, 300);
 
-                    // Buttons deaktivieren
+                    // Buttons deaktivieren und "Nein" als pressed markieren
                     const buttons = document.querySelectorAll('.feedback-response-btn');
                     buttons.forEach(btn => {
+                        if (btn.textContent.trim().includes('Nein')) {
+                            btn.style.background = '#d1d5db'; // Darker gray for pressed state
+                            btn.style.opacity = '1';
+                        } else {
+                            btn.style.opacity = '0.5';
+                        }
                         btn.disabled = true;
-                        btn.style.opacity = '0.5';
                         btn.style.cursor = 'not-allowed';
                     });
                 }
@@ -2345,6 +2350,19 @@
 
             // Bei "Ja": Feedback-Nachricht schließen
             proceedWithFeedbackResponse(response);
+        }
+
+        function validateFeedbackInput() {
+            const feedbackInput = document.getElementById('feedbackInput');
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            if (feedbackInput && submitBtn) {
+                const textLength = feedbackInput.value.trim().length;
+                submitBtn.disabled = textLength < 10;
+                submitBtn.title = textLength < 10
+                    ? 'Mindestens 10 Zeichen erforderlich'
+                    : 'Absenden';
+            }
         }
 
         function submitNegativeFeedback() {
