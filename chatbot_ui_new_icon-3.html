@@ -955,6 +955,68 @@
             stroke-linejoin: round;
         }
 
+        /* Feedback Input bei "Nein" */
+        .feedback-input-container {
+            margin-top: 16px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-input-container.show {
+            opacity: 1;
+            max-height: 150px;
+        }
+
+        .feedback-input-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .feedback-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .feedback-input-wrapper svg {
+            position: absolute;
+            left: 14px;
+            width: 16px;
+            height: 16px;
+            stroke: #9ca3af;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            pointer-events: none;
+        }
+
+        .feedback-input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #374151;
+            font-family: inherit;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+
+        .feedback-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .feedback-input:focus {
+            background: #e5e7eb;
+        }
+
         .date-divider {
             display: flex;
             align-items: center;
@@ -2207,6 +2269,16 @@
                             Nein
                         </button>
                     </div>
+                    <div class="feedback-input-container" id="feedbackInputContainer">
+                        <label class="feedback-input-label">Was hat Ihnen nicht gefallen? (optional)</label>
+                        <div class="feedback-input-wrapper">
+                            <svg viewBox="0 0 24 24">
+                                <line x1="7" y1="17" x2="17" y2="7"/>
+                                <polyline points="17 17 17 7 7 7"/>
+                            </svg>
+                            <input type="text" class="feedback-input" id="feedbackInput" placeholder="Ihre Rückmeldung..." />
+                        </div>
+                    </div>
                 `;
                 chatMessages.appendChild(feedbackMessage);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -2216,6 +2288,53 @@
         function handleFinalFeedback(response) {
             console.log('Final Feedback:', response);
 
+            const chatMessages = document.getElementById('chatMessages');
+            const feedbackInputContainer = document.getElementById('feedbackInputContainer');
+
+            if (response === 'no') {
+                // Bei "Nein": Input-Feld anzeigen
+                if (feedbackInputContainer) {
+                    feedbackInputContainer.classList.add('show');
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                    // Buttons deaktivieren
+                    const buttons = document.querySelectorAll('.feedback-response-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                    });
+
+                    // Input-Feld Listener für Enter oder Blur
+                    const feedbackInput = document.getElementById('feedbackInput');
+                    if (feedbackInput) {
+                        const submitFeedback = () => {
+                            const feedbackText = feedbackInput.value.trim();
+                            console.log('Negative Feedback Text:', feedbackText);
+                            // Hier könnte der Text an Backend gesendet werden
+
+                            // Feedback-Nachricht entfernen und Antwort zeigen
+                            proceedWithFeedbackResponse(response);
+                        };
+
+                        feedbackInput.addEventListener('keypress', (e) => {
+                            if (e.key === 'Enter') {
+                                submitFeedback();
+                            }
+                        });
+
+                        // Auto-submit nach 10 Sekunden ohne Eingabe
+                        setTimeout(submitFeedback, 10000);
+                    }
+                }
+                return; // Nicht weiter ausführen
+            }
+
+            // Bei "Ja" oder nach Input-Feld: Feedback-Nachricht entfernen
+            proceedWithFeedbackResponse(response);
+        }
+
+        function proceedWithFeedbackResponse(response) {
             const chatMessages = document.getElementById('chatMessages');
 
             // Feedback-Nachricht mit smooth Animation entfernen
