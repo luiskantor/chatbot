@@ -1588,15 +1588,41 @@
             const button = document.getElementById('chatButton');
             const popup = document.getElementById('popupMessage');
             const badge = document.getElementById('notificationBadge');
-            
+
             container.classList.toggle('open');
             button.classList.toggle('open');
-            
+
             if (container.classList.contains('open')) {
                 popup.classList.remove('show');
                 badge.classList.remove('show');
+
+                // Chat geöffnet
+                // Chat-Schließen-Timer stoppen
+                if (chatClosedTimer) {
+                    clearTimeout(chatClosedTimer);
+                    chatClosedTimer = null;
+                }
+
+                // Wenn Badge wegen Chat-Schließen gesetzt war, Final Feedback zeigen
+                if (showFeedbackOnOpen) {
+                    showFeedbackOnOpen = false;
+                    showFinalFeedback();
+                } else {
+                    // Inaktivitäts-Timer starten
+                    resetInactivityTimer();
+                }
+            } else {
+                // Chat geschlossen
+                // Inaktivitäts-Timer stoppen
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                    inactivityTimer = null;
+                }
+
+                // Chat-Schließen-Timer starten
+                startChatClosedTimer();
             }
-            
+
             // Puls-Effekt
             button.classList.add('clicked');
             setTimeout(() => {
@@ -1870,6 +1896,9 @@
                 // User hat geschrieben - Flag setzen
                 userHasWritten = true;
 
+                // Inaktivitäts-Timer zurücksetzen bei User-Interaktion
+                resetInactivityTimer();
+
                 // User-Nachricht unterbricht Bot-Nachrichten-Gruppierung
                 lastBotMessageTime = null;
                 lastBotMessageElement = null;
@@ -2104,6 +2133,50 @@
 
         // Tracking ob Feedback bereits angezeigt wurde
         let feedbackShown = false;
+
+        // Timer für Inaktivität und Chat-Schließen
+        let inactivityTimer = null;
+        let chatClosedTimer = null;
+        let showFeedbackOnOpen = false;
+
+        // Inaktivitäts-Timer zurücksetzen
+        function resetInactivityTimer() {
+            // Nur Timer starten wenn Chat offen ist und Feedback noch nicht gezeigt wurde
+            const container = document.getElementById('chatContainer');
+            if (!container.classList.contains('open') || feedbackShown) {
+                return;
+            }
+
+            // Alten Timer clearen
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+
+            // Neuen Timer für 30 Sekunden setzen
+            inactivityTimer = setTimeout(() => {
+                showFinalFeedback();
+            }, 30000); // 30 Sekunden
+        }
+
+        // Chat-Schließen Timer starten
+        function startChatClosedTimer() {
+            // Nur Timer starten wenn Feedback noch nicht gezeigt wurde
+            if (feedbackShown) {
+                return;
+            }
+
+            // Alten Timer clearen
+            if (chatClosedTimer) {
+                clearTimeout(chatClosedTimer);
+            }
+
+            // Timer für 30 Sekunden nach Chat-Schließen
+            chatClosedTimer = setTimeout(() => {
+                const badge = document.getElementById('notificationBadge');
+                badge.classList.add('show');
+                showFeedbackOnOpen = true;
+            }, 30000); // 30 Sekunden
+        }
 
         function showFinalFeedback() {
             if (feedbackShown) {
