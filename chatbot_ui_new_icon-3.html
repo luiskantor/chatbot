@@ -56,8 +56,8 @@
             right: 4px;
             width: 16px;
             height: 16px;
-            background: #ef4444;
-            border: 3px solid transparent;
+            background: transparent;
+            border: 3px solid #ef4444;
             border-radius: 50%;
             opacity: 0;
             transform: scale(0);
@@ -534,7 +534,7 @@
         }
 
         .feedback-btn.active svg {
-            fill: #B7483E;
+            fill: #374151;
         }
 
         .feedback-btn svg {
@@ -1618,17 +1618,18 @@
         function handleFeedback(type, button) {
             console.log('Feedback:', type);
 
-            // Wenn Button bereits aktiv ist, nichts tun
-            if (button.classList.contains('active')) {
-                return;
-            }
-
             // Finde alle Feedback-Buttons in der gleichen Message
             const messageTimestamp = button.closest('.message-timestamp');
             if (messageTimestamp) {
                 const allFeedbackButtons = messageTimestamp.querySelectorAll('.feedback-btn');
-                // Entferne active Klasse von allen Buttons
-                allFeedbackButtons.forEach(btn => btn.classList.remove('active'));
+
+                // Prüfe ob bereits ein Button aktiv ist
+                const hasActiveButton = Array.from(allFeedbackButtons).some(btn => btn.classList.contains('active'));
+
+                // Wenn bereits ein Button aktiv ist, nichts tun
+                if (hasActiveButton) {
+                    return;
+                }
             }
 
             // Setze den geklickten Button auf aktiv
