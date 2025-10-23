@@ -57,7 +57,7 @@
             width: 16px;
             height: 16px;
             background: #ef4444;
-            border: 3px solid rgba(255, 255, 255, 0.15);
+            border: 3px solid rgba(255, 255, 255, 0);
             border-radius: 50%;
             opacity: 0;
             transform: scale(0);
@@ -1086,8 +1086,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            position: relative;
-            overflow: hidden;
             width: fit-content;
         }
 
@@ -1129,6 +1127,7 @@
         .typing-text-content span {
             position: relative;
             display: inline-block;
+            overflow: hidden;
         }
 
         .typing-text-content span::before {
@@ -1146,11 +1145,6 @@
             );
             animation: shine 2s infinite;
             pointer-events: none;
-        }
-
-        .typing-text-content > * {
-            position: relative;
-            z-index: 2;
         }
 
         @keyframes shine {
