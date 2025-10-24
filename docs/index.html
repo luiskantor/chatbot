@@ -1133,6 +1133,20 @@
             transform: scale(1.05);
         }
 
+        .send-button:disabled,
+        .send-button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #f9fafb;
+            transform: none;
+        }
+
+        .send-button:disabled:hover,
+        .send-button.disabled:hover {
+            background: #f9fafb;
+            transform: none;
+        }
+
         .send-button svg {
             width: 20px;
             height: 20px;
@@ -1622,8 +1636,13 @@
                 textarea.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        console.log('Enter gedrückt!');
-                        sendMessage();
+                        // Nur senden wenn Bot nicht tippt (Cooldown)
+                        if (!isBotTyping) {
+                            console.log('Enter gedrückt!');
+                            sendMessage();
+                        } else {
+                            console.log('Enter blockiert: Bot schreibt noch...');
+                        }
                     }
                 });
                 
@@ -1644,6 +1663,14 @@
                 indicator.classList.add('show');
                 indicator.classList.remove('fade-out');
             }
+
+            // Cooldown aktivieren: Send-Button deaktivieren
+            isBotTyping = true;
+            const sendButton = document.querySelector('.send-button');
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.classList.add('disabled');
+            }
         }
 
         function hideTypingText() {
@@ -1654,11 +1681,20 @@
                     indicator.classList.remove('show', 'fade-out');
                 }, 300);
             }
+
+            // Cooldown deaktivieren: Send-Button aktivieren
+            isBotTyping = false;
+            const sendButton = document.querySelector('.send-button');
+            if (sendButton) {
+                sendButton.disabled = false;
+                sendButton.classList.remove('disabled');
+            }
         }
 
         // Variable um zu tracken ob Chat schon geöffnet wurde
         let chatWasOpened = false;
         let userHasWritten = false;
+        let isBotTyping = false; // Cooldown-Flag um Spam zu verhindern
 
         // Pop-up nach 5 Sekunden anzeigen (nur wenn Chat noch nie geöffnet wurde)
         setTimeout(() => {
@@ -1982,6 +2018,12 @@
         }
 
         function sendMessage() {
+            // Cooldown-Prüfung: Blockiere wenn Bot tippt
+            if (isBotTyping) {
+                console.log('Cooldown aktiv: Bot schreibt noch...');
+                return;
+            }
+
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
@@ -2622,8 +2664,13 @@
             textarea.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
-                    console.log('Enter gedrückt, sende Nachricht...');
-                    sendMessage();
+                    // Nur senden wenn Bot nicht tippt (Cooldown)
+                    if (!isBotTyping) {
+                        console.log('Enter gedrückt, sende Nachricht...');
+                        sendMessage();
+                    } else {
+                        console.log('Enter blockiert: Bot schreibt noch...');
+                    }
                 }
             });
             
