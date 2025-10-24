@@ -1398,27 +1398,55 @@
 
             /* Chat Messages Area */
             .chat-messages {
-                padding: 16px;
-                height: calc(100vh - 180px) !important;
+                padding: 12px 16px;
+                height: calc(100vh - 140px) !important; /* Header + Input Area */
+                overflow-y: auto;
             }
 
             /* Message Content */
             .message-content {
                 font-size: 15px;
-                padding: 12px 16px;
+                padding: 10px 14px;
                 max-width: 85%;
+                line-height: 1.5;
+            }
+
+            .message-timestamp {
+                font-size: 11px;
+                margin-top: 4px;
+                gap: 6px;
+            }
+
+            .message-timestamp span {
+                font-size: 11px;
             }
 
             /* Avatars */
-            .message-avatar svg {
+            .message-avatar {
                 width: 32px;
                 height: 32px;
+                min-width: 32px;
+            }
+
+            .message-avatar svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            /* Messages - Spacing optimiert */
+            .message {
+                margin-bottom: 12px;
+                gap: 8px;
+            }
+
+            .message.grouped {
+                margin-top: 4px;
             }
 
             /* Quick Actions */
             .quick-actions {
-                gap: 10px;
-                padding: 12px 0;
+                gap: 8px;
+                padding: 10px 0;
             }
 
             .quick-action-btn {
@@ -1435,19 +1463,27 @@
 
             /* Input Area */
             .chat-input-area {
-                padding: 12px 16px;
+                padding: 10px 16px 10px 16px;
                 border-radius: 0;
+                gap: 8px;
+            }
+
+            .input-wrapper {
+                gap: 8px;
             }
 
             #messageInput {
                 font-size: 16px; /* Verhindert Auto-Zoom auf iOS */
-                padding: 12px 16px;
+                padding: 10px 14px;
+                min-height: 42px;
+                max-height: 100px;
             }
 
             .send-button {
-                width: 44px;
-                height: 44px;
-                min-width: 44px;
+                width: 42px;
+                height: 42px;
+                min-width: 42px;
+                flex-shrink: 0;
             }
 
             /* Typing Indicator */
@@ -1486,9 +1522,9 @@
                 right: 20px !important;
             }
 
+            /* Widget ausblenden wenn Chat offen ist auf Mobile */
             .chat-widget-button.open {
-                width: 60px !important;
-                height: 60px !important;
+                display: none !important;
             }
 
             .chat-icon {
@@ -1599,11 +1635,19 @@
         /* Landscape Modus auf Mobile */
         @media screen and (max-width: 768px) and (orientation: landscape) {
             .chat-messages {
-                height: calc(100vh - 160px) !important;
+                height: calc(100vh - 130px) !important;
             }
 
             .popup-message {
                 bottom: 70px;
+            }
+
+            .chatbot-header {
+                padding: 12px 16px;
+            }
+
+            .chat-input-area {
+                padding: 8px 12px;
             }
         }
 
