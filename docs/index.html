@@ -1442,9 +1442,17 @@
                 font-size: 11px !important;
             }
 
+            /* Fix: User Message Timestamp bleibt immer unter der Nachricht */
+            .message.user .message-timestamp {
+                width: 100% !important;
+                display: flex !important;
+                clear: both !important;
+                margin-top: 4px !important;
+            }
+
             /* Feedback Buttons Gap */
             .feedback-buttons {
-                gap: -8px !important; /* 16px weniger als vorher (8px - 16px) */
+                gap: -64px !important; /* Icons eng zusammen */
             }
 
             /* Avatars - Genau wie Desktop aber kleiner */
