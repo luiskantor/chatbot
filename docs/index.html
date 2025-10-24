@@ -1891,8 +1891,30 @@
         }
 
         function selectQuickAction(action) {
-            toggleChat();
-            console.log('Quick Action:', action);
+            const container = document.getElementById('chatContainer');
+
+            // Chat öffnen falls geschlossen
+            if (!container.classList.contains('open')) {
+                toggleChat();
+            }
+
+            // Mapping der Quick Actions zu vordefinierten Nachrichten
+            const messages = {
+                'termin': 'Ich würde gerne einen Termin vereinbaren.',
+                'kontakt': 'Ich würde gerne eine Kontaktanfrage schicken.',
+                'angebot': 'Was bietet Ihr genau an?'
+            };
+
+            const message = messages[action];
+
+            if (message) {
+                // Kurze Verzögerung damit der Chat Zeit hat sich zu öffnen
+                setTimeout(() => {
+                    const input = document.getElementById('messageInput');
+                    input.value = message;
+                    sendMessage();
+                }, 300);
+            }
         }
 
         function handleFeedback(type, button) {
