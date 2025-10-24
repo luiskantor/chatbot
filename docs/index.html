@@ -419,32 +419,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            position: relative;
-        }
-
-        /* Progressive Blur am oberen Chat-Rand beim Scrollen */
-        .chat-scroll-blur {
-            position: sticky;
-            top: -16px; /* Kompensiert das Padding */
-            left: 0;
-            right: 0;
-            height: 50px;
-            pointer-events: none;
-            z-index: 10;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            background: linear-gradient(to bottom,
-                rgba(255, 255, 255, 0.95) 0%,
-                rgba(255, 255, 255, 0.7) 40%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            margin: -16px -24px 0 -24px; /* Negiert das Padding des Parents */
-        }
-
-        .chat-scroll-blur.visible {
-            opacity: 1;
         }
 
         .message {
@@ -1382,9 +1356,6 @@
         </div>
 
         <div class="chat-messages" id="chatMessages">
-            <!-- Progressive Blur Overlay -->
-            <div class="chat-scroll-blur" id="chatScrollBlur"></div>
-
             <div class="date-divider" id="dateDisplay"></div>
             
             <div class="message bot">
@@ -1542,9 +1513,6 @@
             const chatMessages = document.getElementById('chatMessages');
             lastBotMessageTime = Date.now();
             chatMessages.innerHTML = `
-                <!-- Progressive Blur Overlay -->
-                <div class="chat-scroll-blur" id="chatScrollBlur"></div>
-
                 <div class="date-divider" id="dateDisplay"></div>
 
                 <div class="message bot">
@@ -1685,21 +1653,6 @@
                 });
             } else {
                 console.error('Textarea nicht gefunden!');
-            }
-
-            // Scroll-Event-Handler für progressiven Blur-Effekt
-            const chatMessages = document.getElementById('chatMessages');
-            const scrollBlur = document.getElementById('chatScrollBlur');
-
-            if (chatMessages && scrollBlur) {
-                chatMessages.addEventListener('scroll', function() {
-                    // Blur anzeigen wenn mehr als 10px gescrollt wurde
-                    if (this.scrollTop > 10) {
-                        scrollBlur.classList.add('visible');
-                    } else {
-                        scrollBlur.classList.remove('visible');
-                    }
-                });
             }
         });
 
