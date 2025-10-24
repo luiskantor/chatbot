@@ -237,24 +237,6 @@
             filter: drop-shadow(0 0 4px rgba(183, 72, 62, 0.4));
         }
 
-        .popup-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #B7483E 0%, #d45e52 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(183, 72, 62, 0.25);
-        }
-
-        .popup-icon svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-
         .popup-title {
             font-size: 16px;
             font-weight: 600;
@@ -400,25 +382,6 @@
             font-size: 16px;
             color: #111827;
             font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chatbot-name::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.2) 50%,
-                transparent 100%
-            );
-            animation: shine 2s infinite;
-            pointer-events: none;
         }
 
         .header-actions {
@@ -1362,11 +1325,6 @@
                     </svg>
                     Support Assistant
                 </div>
-            </div>
-            <div class="popup-icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.477 2 2 6.477 2 12c0 1.592.387 3.17 1.11 4.608.39.774.449 1.65.163 2.451l-.801 2.253c-.315.889.534 1.738 1.423 1.423l2.253-.801c.801-.286 1.677-.227 2.451.163A9.954 9.954 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm-3 11a1 1 0 110-2 1 1 0 010 2zm3 0a1 1 0 110-2 1 1 0 010 2zm3 0a1 1 0 110-2 1 1 0 010 2z"/>
-                </svg>
             </div>
             <div class="popup-title">Ich helfe Ihnen gerne weiter!</div>
             <div class="popup-subtitle">Wollen Sie möglicherweise?</div>
