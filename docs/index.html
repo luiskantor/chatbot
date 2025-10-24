@@ -1520,92 +1520,92 @@
                 padding: 8px 16px;
             }
 
-            /* Popup Message - Proportional skaliert (0.8125x) */
+            /* Popup Message - Proportional skaliert (0.65x von Desktop) */
             .popup-message {
-                width: 260px !important; /* 320px * 0.8125 */
-                bottom: 105px !important;
-                right: 50% !important;
+                width: 208px !important; /* 320px * 0.65 */
+                bottom: 85px !important; /* 130px * 0.65 */
+                right: 20px !important; /* Rechts wie Desktop, leicht angepasst */
                 left: auto !important;
-                transform: translateX(50%) translateY(8px) scale(0.95) !important; /* 10px * 0.8 */
+                transform: translateY(7px) scale(0.95) !important; /* 10px * 0.7 */
                 margin: 0 !important;
-                padding: 16px !important; /* 20px * 0.8 */
-                padding-bottom: 26px !important; /* 32px * 0.8125 */
-                border-radius: 16px !important; /* 20px * 0.8 */
+                padding: 13px !important; /* 20px * 0.65 */
+                padding-bottom: 21px !important; /* 32px * 0.65 */
+                border-radius: 13px !important; /* 20px * 0.65 */
             }
 
             .popup-message.show {
-                transform: translateX(50%) translateY(0) scale(1) !important;
+                transform: translateY(0) scale(1) !important;
             }
 
-            /* Popup Arrow - Proportional skaliert + zentriert */
+            /* Popup Arrow - Proportional skaliert + RECHTS positioniert */
             .popup-arrow {
-                bottom: -8px !important; /* -10px * 0.8 */
-                right: 50% !important;
+                bottom: -7px !important; /* -10px * 0.7 */
+                right: 16px !important; /* 24px * 0.65 - RECHTS nicht mittig! */
                 left: auto !important;
-                width: 19px !important; /* 24px * 0.8 */
-                height: 19px !important;
-                transform: translateX(50%) !important;
+                width: 16px !important; /* 24px * 0.65 */
+                height: 16px !important;
+                transform: none !important; /* Kein translateX - bleibt rechts */
             }
 
             .popup-arrow::before {
-                width: 18px !important; /* 22px * 0.82 */
-                height: 18px !important;
-                bottom: 5px !important; /* 6px * 0.83 */
+                width: 14px !important; /* 22px * 0.65 */
+                height: 14px !important;
+                bottom: 4px !important; /* 6px * 0.65 */
                 border-radius: 0 0 3px 0 !important; /* 4px * 0.75 */
             }
 
             /* Popup Close Button - Proportional skaliert */
             .popup-close {
-                top: 13px !important; /* 16px * 0.8125 */
-                right: 13px !important;
-                width: 19px !important; /* 24px * 0.8 */
-                height: 19px !important;
+                top: 10px !important; /* 16px * 0.65 */
+                right: 10px !important;
+                width: 16px !important; /* 24px * 0.65 */
+                height: 16px !important;
             }
 
             .popup-close svg {
-                width: 13px !important; /* 16px * 0.8125 */
-                height: 13px !important;
+                width: 10px !important; /* 16px * 0.65 */
+                height: 10px !important;
             }
 
             /* Popup Content - Proportional skaliert */
             .popup-content {
-                padding-right: 19px !important; /* 24px * 0.8 */
+                padding-right: 16px !important; /* 24px * 0.65 */
             }
 
             .popup-header {
-                gap: 5px !important; /* 6px * 0.83 */
-                margin-bottom: 6px !important; /* 8px * 0.75 */
+                gap: 4px !important; /* 6px * 0.65 */
+                margin-bottom: 5px !important; /* 8px * 0.65 */
             }
 
             .popup-badge {
-                font-size: 10px !important; /* 12px * 0.83 */
+                font-size: 8px !important; /* 12px * 0.65 */
                 gap: 3px !important; /* 4px * 0.75 */
             }
 
             .spark-icon {
-                width: 11px !important; /* 14px * 0.79 */
-                height: 11px !important;
+                width: 9px !important; /* 14px * 0.65 */
+                height: 9px !important;
             }
 
             .popup-title {
-                font-size: 13px !important; /* 16px * 0.8125 */
+                font-size: 10px !important; /* 16px * 0.65 */
                 margin-bottom: 3px !important; /* 4px * 0.75 */
             }
 
             .popup-subtitle {
-                font-size: 10px !important; /* 12px * 0.83 */
-                margin-bottom: 16px !important; /* 20px * 0.8 */
+                font-size: 8px !important; /* 12px * 0.65 */
+                margin-bottom: 13px !important; /* 20px * 0.65 */
             }
 
             /* Quick Actions in Popup - Proportional skaliert */
             .popup-message .quick-actions {
-                gap: 6px !important; /* 8px * 0.75 */
+                gap: 5px !important; /* 8px * 0.65 */
             }
 
             .popup-message .quick-action-btn {
-                padding: 11px 13px !important; /* 14px/16px * ~0.8 */
-                font-size: 11px !important; /* 13px * 0.85 */
-                border-radius: 8px !important; /* 10px * 0.8 */
+                padding: 9px 10px !important; /* 14px/16px * 0.65 */
+                font-size: 8px !important; /* 13px * 0.65 */
+                border-radius: 7px !important; /* 10px * 0.7 */
             }
 
             /* Chat Button */
