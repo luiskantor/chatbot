@@ -1434,7 +1434,7 @@
 
             .message-timestamp {
                 font-size: 11px !important;
-                margin-top: -8px !important; /* 6px höher (war -2px) */
+                margin-top: -6px !important; /* 2px tiefer als vorher */
                 gap: 4px !important; /* Reduziert: weniger Abstand zwischen Time und Feedback */
             }
 
@@ -1452,7 +1452,7 @@
                 width: 30px !important;
                 height: 30px !important;
                 min-width: 30px !important;
-                margin-bottom: 44px !important; /* 4px tiefer (war 48px) */
+                margin-bottom: 42px !important; /* 2px tiefer als vorher */
             }
 
             .message-avatar svg {
@@ -1520,40 +1520,92 @@
                 padding: 8px 16px;
             }
 
-            /* Popup Message - Desktop-Styles mit Mobile-Anpassung */
+            /* Popup Message - Proportional skaliert (0.8125x) */
             .popup-message {
-                width: 280px !important; /* Etwas kleiner als Desktop (320px) */
-                bottom: 90px !important;
+                width: 260px !important; /* 320px * 0.8125 */
+                bottom: 105px !important;
                 right: 50% !important;
                 left: auto !important;
-                transform: translateX(50%) translateY(10px) scale(0.95) !important;
+                transform: translateX(50%) translateY(8px) scale(0.95) !important; /* 10px * 0.8 */
                 margin: 0 !important;
-                padding: 20px !important;
-                padding-bottom: 32px !important;
-                border-radius: 20px !important;
+                padding: 16px !important; /* 20px * 0.8 */
+                padding-bottom: 26px !important; /* 32px * 0.8125 */
+                border-radius: 16px !important; /* 20px * 0.8 */
             }
 
             .popup-message.show {
                 transform: translateX(50%) translateY(0) scale(1) !important;
             }
 
-            .popup-content {
-                padding: 0 !important; /* Kein extra padding, da bereits im popup-message */
-            }
-
-            .popup-content h3 {
-                font-size: 17px !important; /* Etwas kleiner als Desktop */
-            }
-
-            .popup-content p {
-                font-size: 14px !important;
-            }
-
-            /* Popup Arrow - Zentriert auf Mobile */
+            /* Popup Arrow - Proportional skaliert + zentriert */
             .popup-arrow {
+                bottom: -8px !important; /* -10px * 0.8 */
                 right: 50% !important;
                 left: auto !important;
+                width: 19px !important; /* 24px * 0.8 */
+                height: 19px !important;
                 transform: translateX(50%) !important;
+            }
+
+            .popup-arrow::before {
+                width: 18px !important; /* 22px * 0.82 */
+                height: 18px !important;
+                bottom: 5px !important; /* 6px * 0.83 */
+                border-radius: 0 0 3px 0 !important; /* 4px * 0.75 */
+            }
+
+            /* Popup Close Button - Proportional skaliert */
+            .popup-close {
+                top: 13px !important; /* 16px * 0.8125 */
+                right: 13px !important;
+                width: 19px !important; /* 24px * 0.8 */
+                height: 19px !important;
+            }
+
+            .popup-close svg {
+                width: 13px !important; /* 16px * 0.8125 */
+                height: 13px !important;
+            }
+
+            /* Popup Content - Proportional skaliert */
+            .popup-content {
+                padding-right: 19px !important; /* 24px * 0.8 */
+            }
+
+            .popup-header {
+                gap: 5px !important; /* 6px * 0.83 */
+                margin-bottom: 6px !important; /* 8px * 0.75 */
+            }
+
+            .popup-badge {
+                font-size: 10px !important; /* 12px * 0.83 */
+                gap: 3px !important; /* 4px * 0.75 */
+            }
+
+            .spark-icon {
+                width: 11px !important; /* 14px * 0.79 */
+                height: 11px !important;
+            }
+
+            .popup-title {
+                font-size: 13px !important; /* 16px * 0.8125 */
+                margin-bottom: 3px !important; /* 4px * 0.75 */
+            }
+
+            .popup-subtitle {
+                font-size: 10px !important; /* 12px * 0.83 */
+                margin-bottom: 16px !important; /* 20px * 0.8 */
+            }
+
+            /* Quick Actions in Popup - Proportional skaliert */
+            .popup-message .quick-actions {
+                gap: 6px !important; /* 8px * 0.75 */
+            }
+
+            .popup-message .quick-action-btn {
+                padding: 11px 13px !important; /* 14px/16px * ~0.8 */
+                font-size: 11px !important; /* 13px * 0.85 */
+                border-radius: 8px !important; /* 10px * 0.8 */
             }
 
             /* Chat Button */
@@ -1579,14 +1631,14 @@
                 height: 28px !important;
             }
 
-            /* Notification Badge */
+            /* Notification Badge - Proportional skaliert */
             .notification-badge {
-                width: 20px;
-                height: 20px;
-                font-size: 11px;
-                top: -3px;
-                right: -3px;
-                border: 2.5px solid rgba(255, 255, 255, 1);
+                width: 13px !important; /* 16px * 0.8125 */
+                height: 13px !important;
+                font-size: 8px !important; /* Kleiner für Mobile */
+                top: 3px !important; /* 4px * 0.75 */
+                right: 3px !important;
+                border: 2px solid rgba(255, 255, 255, 1) !important;
             }
 
             /* Booking Form */
