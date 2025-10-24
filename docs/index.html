@@ -1434,12 +1434,17 @@
 
             .message-timestamp {
                 font-size: 11px !important;
-                margin-top: -6px !important; /* 2px tiefer als vorher */
-                gap: 4px !important; /* Reduziert: weniger Abstand zwischen Time und Feedback */
+                margin-top: -6px !important;
+                gap: 16px !important; /* 16px Abstand zwischen Zeit und Feedback-Icons */
             }
 
             .message-timestamp span {
                 font-size: 11px !important;
+            }
+
+            /* Feedback-Separator auf Mobile ausblenden */
+            .feedback-separator {
+                display: none !important;
             }
 
             /* Fix: User Message Timestamp bleibt immer unter der Nachricht */
@@ -1452,7 +1457,7 @@
 
             /* Feedback Buttons Gap */
             .feedback-buttons {
-                gap: -64px !important; /* Icons eng zusammen */
+                gap: 16px !important; /* 16px Abstand zwischen den einzelnen Icons */
             }
 
             /* Avatars - Genau wie Desktop aber kleiner */
