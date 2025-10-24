@@ -2300,6 +2300,24 @@
 
         function handleQuickActionClick(action) {
             console.log('Quick Action geklickt:', action);
+
+            // Mapping der Quick Actions zu vordefinierten Nachrichten
+            const messages = {
+                'termin': 'Ich würde gerne einen Termin vereinbaren.',
+                'produkte': 'Was bietet Ihr genau an?',
+                'kontakt': 'Ich würde gerne eine Kontaktanfrage schicken.'
+            };
+
+            const message = messages[action];
+
+            if (message) {
+                const input = document.getElementById('messageInput');
+                input.value = message;
+                sendMessage();
+                return;
+            }
+
+            // Fallback für alte Implementierung (kann später entfernt werden)
             const chatMessages = document.getElementById('chatMessages');
 
             // User-Nachricht unterbricht Bot-Gruppierung
