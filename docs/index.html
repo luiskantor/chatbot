@@ -1901,7 +1901,7 @@
             // Mapping der Quick Actions zu vordefinierten Nachrichten
             const messages = {
                 'termin': 'Ich würde gerne einen Termin vereinbaren.',
-                'kontakt': 'Ich würde gerne eine Kontaktanfrage schicken.',
+                'kontakt': 'Ich würde gerne Kontakt per Anfrage aufnehmen.',
                 'angebot': 'Was bietet Ihr genau an?'
             };
 
@@ -1953,6 +1953,20 @@
 
         function selectAppointment(appointment) {
             console.log('Termin ausgewählt:', appointment);
+
+            // Parse appointment string: "Montag, 28.10 · 10:00" → "Der Termin am Montag, 28.10 um 10:00, bitte."
+            const parts = appointment.split('·');
+            const date = parts[0].trim();
+            const time = parts[1].trim();
+            const formattedMessage = `Der Termin am ${date} um ${time}, bitte.`;
+
+            // Nutze sendMessage um die Nachricht zu senden
+            const input = document.getElementById('messageInput');
+            input.value = formattedMessage;
+            sendMessage();
+            return;
+
+            // Alte Implementierung (wird nicht mehr erreicht)
             const chatMessages = document.getElementById('chatMessages');
 
             // User-Nachricht unterbricht Bot-Gruppierung
@@ -2305,7 +2319,7 @@
             const messages = {
                 'termin': 'Ich würde gerne einen Termin vereinbaren.',
                 'produkte': 'Was bietet Ihr genau an?',
-                'kontakt': 'Ich würde gerne eine Kontaktanfrage schicken.'
+                'kontakt': 'Ich würde gerne Kontakt per Anfrage aufnehmen.'
             };
 
             const message = messages[action];
