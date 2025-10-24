@@ -380,7 +380,7 @@
 
         .chatbot-name {
             font-size: 16px;
-            color: #111827;
+            color: #B7483E;
             font-weight: 600;
             position: relative;
             overflow: hidden;
@@ -402,14 +402,14 @@
                 rgba(255, 255, 255, 0.5) 50%,
                 transparent 100%
             );
-            animation: shine 3s infinite;
+            animation: shineSlower 8s infinite;
             pointer-events: none;
         }
 
         .chatbot-name .spark-icon {
             width: 14px;
             height: 14px;
-            fill: #111827;
+            fill: #B7483E;
             flex-shrink: 0;
         }
 
@@ -1316,6 +1316,18 @@
             100% {
                 left: 100%;
             }
+        }
+
+        @keyframes shineSlower {
+            0% {
+                left: -100%;
+            }
+            25% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
         }</style>
 </head>
 <body>
@@ -1543,7 +1555,8 @@
         // const AVATAR_IMAGE = './images/customer-logo.png';
         //
         // Wenn leer gelassen oder null, wird das Standard-SVG-Logo verwendet
-        const AVATAR_IMAGE = null; // <-- Hier Bild-URL eintragen
+        // HINWEIS: Falls das Bild nicht lädt, Dateiendung anpassen (.jpg, .jpeg, .png)
+        const AVATAR_IMAGE = 'https://i.imgur.com/FF0CJJj.png'; // <-- Hier Bild-URL eintragen
 
         // ====================================
         // FUNKTIONEN
