@@ -1702,10 +1702,8 @@
                 if (showFeedbackOnOpen) {
                     showFeedbackOnOpen = false;
                     showFinalFeedback();
-                } else {
-                    // Inaktivitäts-Timer starten
-                    resetInactivityTimer();
                 }
+                // Inaktivitäts-Timer wurde entfernt - nur beim Chat-Schließen relevant
             } else {
                 // Chat geschlossen
                 // Inaktivitäts-Timer stoppen
@@ -1991,8 +1989,7 @@
                 // User hat geschrieben - Flag setzen
                 userHasWritten = true;
 
-                // Inaktivitäts-Timer zurücksetzen bei User-Interaktion
-                resetInactivityTimer();
+                // Inaktivitäts-Timer wurde entfernt - nur beim Chat-Schließen relevant
 
                 // User-Nachricht unterbricht Bot-Nachrichten-Gruppierung
                 lastBotMessageTime = null;
@@ -2255,8 +2252,8 @@
 
         // Chat-Schließen Timer starten
         function startChatClosedTimer() {
-            // Nur Timer starten wenn Feedback noch nicht gezeigt wurde
-            if (feedbackShown) {
+            // Nur Timer starten wenn Feedback noch nicht gezeigt wurde UND User geschrieben hat
+            if (feedbackShown || !userHasWritten) {
                 return;
             }
 
@@ -2604,6 +2601,9 @@
                             chatMessages.appendChild(confirmMessage);
                             lastBotMessageElement = confirmMessage;
                             chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                            // Final Feedback nach Kontakt-Nachricht anzeigen
+                            showFinalFeedback();
 
                             // "Kontaktformular öffnen" Button verstecken
                             const contactHandoverBtn = document.querySelector('.contact-handover-btn');
