@@ -1435,15 +1435,19 @@
             .message-timestamp {
                 font-size: 11px !important;
                 margin-top: -6px !important;
-                gap: 16px !important; /* 16px Abstand zwischen Zeit und Feedback-Icons */
+                gap: 4px !important;
             }
 
             .message-timestamp span {
                 font-size: 11px !important;
             }
 
-            /* Feedback-Separator auf Mobile ausblenden */
+            /* Feedback-Icons und Separator komplett auf Mobile ausblenden */
             .feedback-separator {
+                display: none !important;
+            }
+
+            .feedback-buttons {
                 display: none !important;
             }
 
@@ -1453,11 +1457,6 @@
                 display: flex !important;
                 clear: both !important;
                 margin-top: 4px !important;
-            }
-
-            /* Feedback Buttons Gap */
-            .feedback-buttons {
-                gap: 16px !important; /* 16px Abstand zwischen den einzelnen Icons */
             }
 
             /* Avatars - Genau wie Desktop aber kleiner */
@@ -1509,7 +1508,7 @@
             }
 
             #messageInput {
-                font-size: 15px; /* Gleiche Größe wie Bot-Nachrichten */
+                font-size: 16px !important; /* 16px verhindert Auto-Zoom auf iOS */
                 padding: 11px 14px;
                 min-height: 44px;
                 max-height: 120px;
