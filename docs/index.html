@@ -1961,26 +1961,22 @@
             const time = parts[1].trim();
             const formattedMessage = `Der Termin am ${date} um ${time}, bitte.`;
 
-            // Nutze sendMessage um die Nachricht zu senden
-            const input = document.getElementById('messageInput');
-            input.value = formattedMessage;
-            sendMessage();
-            return;
-
-            // Alte Implementierung (wird nicht mehr erreicht)
             const chatMessages = document.getElementById('chatMessages');
 
             // User-Nachricht unterbricht Bot-Gruppierung
             lastBotMessageTime = null;
             lastBotMessageElement = null;
 
-            // User-Nachricht mit ausgewähltem Termin
+            // User hat geschrieben - Flag setzen
+            userHasWritten = true;
+
+            // User-Nachricht mit ausgewähltem Termin (formatiert)
             const userMessage = document.createElement('div');
             userMessage.className = 'message user';
             userMessage.innerHTML = `
                 <div>
                     <div class="message-content">
-                        ${appointment}
+                        ${formattedMessage}
                     </div>
                     <div class="message-timestamp">
                         <span>${getCurrentTime()}</span>
