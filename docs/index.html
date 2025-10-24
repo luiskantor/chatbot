@@ -382,6 +382,35 @@
             font-size: 16px;
             color: #111827;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chatbot-name::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.5) 50%,
+                transparent 100%
+            );
+            animation: shine 2s infinite;
+            pointer-events: none;
+        }
+
+        .chatbot-name .spark-icon {
+            width: 14px;
+            height: 14px;
+            fill: #B7483E;
+            flex-shrink: 0;
         }
 
         .header-actions {
@@ -1359,7 +1388,12 @@
                 </div>
                 <div class="header-info">
                     <div class="company-name">kantor lab.</div>
-                    <div class="chatbot-name">Support Assistant</div>
+                    <div class="chatbot-name">
+                        <svg class="spark-icon" viewBox="0 0 24 24">
+                            <path d="M12 2L9 9L2 12L9 15L12 22L15 15L22 12L15 9L12 2Z"/>
+                        </svg>
+                        Support Assistant
+                    </div>
                 </div>
             </div>
             <div class="header-actions">
