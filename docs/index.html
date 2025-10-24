@@ -490,9 +490,20 @@
             margin-top: -8px;
         }
 
-        /* Frühere Nachrichten in einer Gruppe verstecken Avatar und Timestamp */
+        /* Frühere Nachrichten in einer Gruppe: Avatar verschwindet mit Slide-Out Animation */
         .message.bot.grouped-previous .message-avatar {
-            visibility: hidden;
+            animation: slideOutLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-20px) scale(0.8);
+            }
         }
 
         .message.bot.grouped-previous .message-timestamp {
