@@ -1522,14 +1522,14 @@
 
             /* Popup Message - Proportional skaliert (0.65x von Desktop) */
             .popup-message {
-                width: 208px !important; /* 320px * 0.65 */
-                bottom: 85px !important; /* 130px * 0.65 */
+                width: 120px !important;
+                bottom: 109px !important; /* 24px höher als vorher (85px + 24px) */
                 right: 20px !important; /* Rechts wie Desktop, leicht angepasst */
                 left: auto !important;
                 transform: translateY(7px) scale(0.95) !important; /* 10px * 0.7 */
                 margin: 0 !important;
-                padding: 13px !important; /* 20px * 0.65 */
-                padding-bottom: 21px !important; /* 32px * 0.65 */
+                padding: 8px !important; /* Reduziert für weniger Höhe */
+                padding-bottom: 2px !important; /* 24px weniger Höhe gesamt */
                 border-radius: 13px !important; /* 20px * 0.65 */
             }
 
@@ -1606,6 +1606,7 @@
                 padding: 9px 10px !important; /* 14px/16px * 0.65 */
                 font-size: 8px !important; /* 13px * 0.65 */
                 border-radius: 7px !important; /* 10px * 0.7 */
+                width: 100% !important; /* An popup-message Breite angepasst */
             }
 
             /* Chat Button */
