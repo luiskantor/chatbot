@@ -1520,17 +1520,9 @@
                 padding: 8px 16px;
             }
 
-            /* Popup Message - Proportional skaliert (0.65x von Desktop) */
+            /* Popup Message - Auf Mobile komplett ausgeblendet */
             .popup-message {
-                width: 120px !important;
-                bottom: 109px !important; /* 24px höher als vorher (85px + 24px) */
-                right: 20px !important; /* Rechts wie Desktop, leicht angepasst */
-                left: auto !important;
-                transform: translateY(7px) scale(0.95) !important; /* 10px * 0.7 */
-                margin: 0 !important;
-                padding: 8px !important; /* Reduziert für weniger Höhe */
-                padding-bottom: 2px !important; /* 24px weniger Höhe gesamt */
-                border-radius: 13px !important; /* 20px * 0.65 */
+                display: none !important;
             }
 
             .popup-message.show {
