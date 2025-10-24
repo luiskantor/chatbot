@@ -1331,7 +1331,289 @@
             100% {
                 left: 100%;
             }
-        }</style>
+        }
+
+        /* ====================================
+           RESPONSIVE DESIGN - MOBILE OPTIMIERT
+           ==================================== */
+
+        /* Tablet und kleinere Desktops (768px - 1024px) */
+        @media screen and (max-width: 1024px) {
+            .chat-container {
+                width: 420px;
+                height: 600px;
+            }
+        }
+
+        /* Mobile Geräte - FULLSCREEN MODUS (unter 768px) */
+        @media screen and (max-width: 768px) {
+            /* Chat Container: Fullscreen auf Mobile */
+            .chat-container {
+                width: 100vw !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                bottom: 0 !important;
+                right: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+
+            .chat-container.open {
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+
+            /* Chat Header */
+            .chat-header {
+                padding: 16px 20px;
+                border-radius: 0;
+            }
+
+            .chatbot-name {
+                font-size: 18px;
+            }
+
+            .logo-container {
+                width: 44px;
+                height: 44px;
+            }
+
+            /* Close Button größer für Touch */
+            .close-btn {
+                width: 40px;
+                height: 40px;
+                padding: 8px;
+            }
+
+            /* Chat Messages Area */
+            .chat-messages {
+                padding: 16px;
+                height: calc(100vh - 180px) !important;
+            }
+
+            /* Message Content */
+            .message-content {
+                font-size: 15px;
+                padding: 12px 16px;
+                max-width: 85%;
+            }
+
+            /* Avatars */
+            .message-avatar svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            /* Quick Actions */
+            .quick-actions {
+                gap: 10px;
+                padding: 12px 0;
+            }
+
+            .quick-action-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+                min-height: 44px; /* Touch-optimiert */
+            }
+
+            .quick-action-chat-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+                min-height: 44px; /* Touch-optimiert */
+            }
+
+            /* Input Area */
+            .chat-input {
+                padding: 12px 16px;
+                border-radius: 0;
+            }
+
+            #messageInput {
+                font-size: 16px; /* Verhindert Auto-Zoom auf iOS */
+                padding: 12px 16px;
+            }
+
+            .send-button {
+                width: 44px;
+                height: 44px;
+                min-width: 44px;
+            }
+
+            /* Typing Indicator */
+            .typing-text-indicator {
+                font-size: 13px;
+                padding: 8px 16px;
+            }
+
+            /* Popup Message */
+            .popup-message {
+                width: calc(100% - 32px);
+                max-width: 100%;
+                bottom: 90px;
+                right: 16px;
+                left: 16px;
+                margin: 0 auto;
+            }
+
+            .popup-content {
+                padding: 16px;
+            }
+
+            .popup-content h3 {
+                font-size: 16px;
+            }
+
+            .popup-content p {
+                font-size: 14px;
+            }
+
+            /* Chat Button */
+            .chat-button {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .chat-button.open {
+                width: 60px;
+                height: 60px;
+            }
+
+            /* Notification Badge */
+            .notification-badge {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+                top: -4px;
+                right: -4px;
+            }
+
+            /* Booking Form */
+            .booking-form {
+                gap: 12px;
+            }
+
+            .booking-input {
+                padding: 12px 14px;
+                font-size: 16px; /* Verhindert Auto-Zoom auf iOS */
+                min-height: 44px;
+            }
+
+            .booking-submit {
+                padding: 14px;
+                font-size: 15px;
+                min-height: 48px;
+            }
+
+            /* Contact Button */
+            .contact-handover-btn {
+                padding: 12px 18px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+
+            /* Feedback Buttons */
+            .feedback-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            /* Final Feedback */
+            .final-feedback-overlay {
+                padding: 20px;
+            }
+
+            .final-feedback-content {
+                width: 100%;
+                max-width: 100%;
+                padding: 24px 20px;
+                border-radius: 16px;
+            }
+
+            .final-feedback-content h3 {
+                font-size: 20px;
+            }
+
+            .rating-button {
+                width: 56px;
+                height: 56px;
+            }
+
+            /* Expanded Mode nicht auf Mobile */
+            .chat-container.expanded {
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+
+            /* Expand Button verstecken auf Mobile */
+            .expand-btn {
+                display: none;
+            }
+        }
+
+        /* Sehr kleine Mobile Geräte (unter 375px) */
+        @media screen and (max-width: 375px) {
+            .message-content {
+                font-size: 14px;
+                max-width: 80%;
+            }
+
+            .quick-action-btn,
+            .quick-action-chat-btn {
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+
+            .popup-content h3 {
+                font-size: 15px;
+            }
+
+            .chat-button {
+                width: 56px;
+                height: 56px;
+            }
+        }
+
+        /* Landscape Modus auf Mobile */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .chat-messages {
+                height: calc(100vh - 160px) !important;
+            }
+
+            .popup-message {
+                bottom: 70px;
+            }
+        }
+
+        /* Touch-Optimierungen für alle Geräte */
+        @media (hover: none) and (pointer: coarse) {
+            /* Alle anklickbaren Elemente mindestens 44px für Touch */
+            button,
+            .quick-action-btn,
+            .quick-action-chat-btn,
+            .booking-submit,
+            .contact-handover-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            /* Hover-Effekte deaktivieren auf Touch-Geräten */
+            .quick-action-btn:hover,
+            .quick-action-chat-btn:hover,
+            .send-button:hover,
+            .close-btn:hover {
+                transform: none;
+            }
+
+            /* Aktive States für Touch-Feedback */
+            .quick-action-btn:active,
+            .quick-action-chat-btn:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+        }
+        </style>
 </head>
 <body>
     <button class="chat-widget-button" id="chatButton" onclick="toggleChat()">
