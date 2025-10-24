@@ -1434,7 +1434,7 @@
 
             .message-timestamp {
                 font-size: 11px !important;
-                margin-top: -2px !important; /* 4px nach oben verschoben */
+                margin-top: -8px !important; /* 6px höher (war -2px) */
                 gap: 4px !important; /* Reduziert: weniger Abstand zwischen Time und Feedback */
             }
 
@@ -1444,7 +1444,7 @@
 
             /* Feedback Buttons Gap */
             .feedback-buttons {
-                gap: 4px !important; /* Ganz nah zusammen */
+                gap: 8px !important; /* 8px auseinander */
             }
 
             /* Avatars - Genau wie Desktop aber kleiner */
@@ -1452,7 +1452,7 @@
                 width: 30px !important;
                 height: 30px !important;
                 min-width: 30px !important;
-                margin-bottom: 48px !important; /* 24px höher als vorher */
+                margin-bottom: 44px !important; /* 4px tiefer (war 48px) */
             }
 
             .message-avatar svg {
@@ -1520,31 +1520,39 @@
                 padding: 8px 16px;
             }
 
-            /* Popup Message */
+            /* Popup Message - Desktop-Styles mit Mobile-Anpassung */
             .popup-message {
-                width: calc(100% - 32px);
-                max-width: 100%;
-                bottom: 90px;
-                right: 16px;
-                left: 16px;
-                margin: 0 auto;
+                width: 280px !important; /* Etwas kleiner als Desktop (320px) */
+                bottom: 90px !important;
+                right: 50% !important;
+                left: auto !important;
+                transform: translateX(50%) translateY(10px) scale(0.95) !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                padding-bottom: 32px !important;
+                border-radius: 20px !important;
+            }
+
+            .popup-message.show {
+                transform: translateX(50%) translateY(0) scale(1) !important;
             }
 
             .popup-content {
-                padding: 16px;
+                padding: 0 !important; /* Kein extra padding, da bereits im popup-message */
             }
 
             .popup-content h3 {
-                font-size: 16px;
+                font-size: 17px !important; /* Etwas kleiner als Desktop */
             }
 
             .popup-content p {
-                font-size: 14px;
+                font-size: 14px !important;
             }
 
             /* Popup Arrow - Zentriert auf Mobile */
             .popup-arrow {
                 right: 50% !important;
+                left: auto !important;
                 transform: translateX(50%) !important;
             }
 
