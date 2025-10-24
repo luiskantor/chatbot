@@ -1339,7 +1339,7 @@
 
         /* Tablet und kleinere Desktops (768px - 1024px) */
         @media screen and (max-width: 1024px) {
-            .chat-container {
+            .chatbot-container {
                 width: 420px;
                 height: 600px;
             }
@@ -1348,7 +1348,7 @@
         /* Mobile Geräte - FULLSCREEN MODUS (unter 768px) */
         @media screen and (max-width: 768px) {
             /* Chat Container: Fullscreen auf Mobile */
-            .chat-container {
+            .chatbot-container {
                 width: 100vw !important;
                 height: 100vh !important;
                 max-height: 100vh !important;
@@ -1358,13 +1358,13 @@
                 box-shadow: none !important;
             }
 
-            .chat-container.open {
+            .chatbot-container.open {
                 width: 100vw !important;
                 height: 100vh !important;
             }
 
             /* Chat Header */
-            .chat-header {
+            .chatbot-header {
                 padding: 16px 20px;
                 border-radius: 0;
             }
@@ -1390,7 +1390,7 @@
             }
 
             /* Close Button größer für Touch */
-            .close-btn {
+            .icon-button {
                 width: 40px;
                 height: 40px;
                 padding: 8px;
@@ -1434,7 +1434,7 @@
             }
 
             /* Input Area */
-            .chat-input {
+            .chat-input-area {
                 padding: 12px 16px;
                 border-radius: 0;
             }
@@ -1562,14 +1562,14 @@
             }
 
             /* Expanded Mode nicht auf Mobile */
-            .chat-container.expanded {
+            .chatbot-container.expanded {
                 width: 100vw !important;
                 height: 100vh !important;
             }
 
             /* Expand Button verstecken auf Mobile */
-            .expand-btn {
-                display: none;
+            .icon-button[onclick="toggleExpand()"] {
+                display: none !important;
             }
         }
 
@@ -1623,7 +1623,7 @@
             .quick-action-btn:hover,
             .quick-action-chat-btn:hover,
             .send-button:hover,
-            .close-btn:hover,
+            .icon-button:hover,
             .chat-widget-button:hover {
                 transform: none;
             }
