@@ -2323,6 +2323,9 @@
                 popup.classList.remove('show');
                 badge.classList.remove('show');
 
+                // Chat wurde geöffnet - Flag setzen damit Popup nie wieder erscheint
+                chatWasOpened = true;
+
                 // Chat geöffnet
                 // Chat-Schließen-Timer stoppen
                 if (chatClosedTimer) {
