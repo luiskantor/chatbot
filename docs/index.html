@@ -1680,12 +1680,16 @@
                 padding: 14px;
                 font-size: 15px;
                 min-height: 48px;
+                max-height: 48px !important; /* Wichtig für Animation */
+                opacity: 1 !important;
+                overflow: hidden !important; /* Wichtig für Animation */
                 transition: all 0.3s ease !important; /* Sicherstellen dass Animation funktioniert */
             }
 
             .booking-submit.hide {
                 opacity: 0 !important;
                 max-height: 0 !important;
+                min-height: 0 !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 transition: all 0.3s ease !important;
