@@ -1384,12 +1384,6 @@
                 font-size: 17px;
             }
 
-            /* Spark-Icon im Header auf Mobile */
-            .chatbot-name .spark-icon {
-                width: 20px !important;
-                height: 20px !important;
-            }
-
             .logo-container {
                 width: 40px;
                 height: 40px;
@@ -1600,6 +1594,12 @@
             .spark-icon {
                 width: 9px !important; /* 14px * 0.65 */
                 height: 9px !important;
+            }
+
+            /* Spark-Icon im Header MUSS nach allgemeiner spark-icon Regel kommen */
+            .chatbot-name .spark-icon {
+                width: 18px !important; /* 2px kleiner als vorher (war 20px) */
+                height: 18px !important;
             }
 
             .popup-title {
