@@ -1770,12 +1770,13 @@
                 left: 0 !important;
                 border-radius: 0 !important;
                 z-index: 1000 !important;
-                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
                 /* Geschlossener Zustand als Standard */
                 transform: translateY(100%) !important;
                 opacity: 0 !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
+                /* Transition NUR für transform und opacity, NICHT für pointer-events/visibility */
+                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
             }
 
             .contact-form-container.open {
@@ -3069,9 +3070,13 @@
             // Kontaktformular verstecken, Chat anzeigen
             console.log('Entferne .open von Kontaktformular');
             contactFormContainer.classList.remove('open');
-            console.log('Füge .open zu Chat hinzu');
-            chatContainer.classList.add('open');
-            console.log('closeContactForm() abgeschlossen');
+
+            // Kurzes Delay bevor Chat geöffnet wird (für saubere Animation)
+            setTimeout(() => {
+                console.log('Füge .open zu Chat hinzu');
+                chatContainer.classList.add('open');
+                console.log('closeContactForm() abgeschlossen');
+            }, 50);
         }
 
         // Tracking ob Feedback bereits angezeigt wurde
