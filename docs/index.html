@@ -684,6 +684,7 @@
             flex-direction: column;
             gap: 8px;
             margin-top: 16px;
+            transition: all 0.3s ease; /* Animation für Höhenänderung */
         }
 
         .booking-input {
@@ -788,6 +789,7 @@
 
         .booking-form.submitted {
             gap: 4px;
+            transition: all 0.3s ease; /* Animation für gap Änderung */
         }
 
         /* Contact Form Container */
@@ -1660,6 +1662,12 @@
             /* Booking Form */
             .booking-form {
                 gap: 12px;
+                transition: all 0.3s ease !important; /* Animation auch auf Mobile */
+            }
+
+            .booking-form.submitted {
+                gap: 4px !important;
+                transition: all 0.3s ease !important;
             }
 
             .booking-input {
