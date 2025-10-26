@@ -1598,8 +1598,8 @@
 
             /* Spark-Icon im Header MUSS nach allgemeiner spark-icon Regel kommen */
             .chatbot-name .spark-icon {
-                width: 18px !important; /* 2px kleiner als vorher (war 20px) */
-                height: 18px !important;
+                width: 16px !important; /* Noch 2px kleiner */
+                height: 16px !important;
             }
 
             .popup-title {
@@ -1672,6 +1672,15 @@
                 padding: 14px;
                 font-size: 15px;
                 min-height: 48px;
+                transition: all 0.3s ease !important; /* Sicherstellen dass Animation funktioniert */
+            }
+
+            .booking-submit.hide {
+                opacity: 0 !important;
+                max-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                transition: all 0.3s ease !important;
             }
 
             /* Contact Button */
