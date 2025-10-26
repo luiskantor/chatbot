@@ -808,6 +808,7 @@
             flex-direction: column;
             overflow: hidden;
             z-index: 999;
+            /* NUR transform und opacity animieren - pointer-events/visibility sofort ändern */
             transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
                         transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             opacity: 0;
@@ -3057,6 +3058,10 @@
             const chatContainer = document.getElementById('chatContainer');
             const contactFormContainer = document.getElementById('contactFormContainer');
 
+            // Inline-Styles entfernen (falls von closeContactForm gesetzt)
+            contactFormContainer.style.pointerEvents = '';
+            contactFormContainer.style.visibility = '';
+
             // Chat verstecken, Kontaktformular anzeigen
             chatContainer.classList.remove('open');
             contactFormContainer.classList.add('open');
@@ -3066,6 +3071,10 @@
             console.log('Schließe Kontaktformular...');
             const chatContainer = document.getElementById('chatContainer');
             const contactFormContainer = document.getElementById('contactFormContainer');
+
+            // WICHTIG: Pointer-events SOFORT deaktivieren, BEVOR Klasse entfernt wird
+            contactFormContainer.style.pointerEvents = 'none';
+            contactFormContainer.style.visibility = 'hidden';
 
             // Kontaktformular verstecken, Chat anzeigen
             console.log('Entferne .open von Kontaktformular');
