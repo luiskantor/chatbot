@@ -1771,11 +1771,16 @@
                 border-radius: 0 !important;
                 transform: translateY(100%) !important; /* Von unten reinsliden */
                 transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
+                pointer-events: none !important;
+                visibility: hidden !important;
+                z-index: 1000 !important; /* Über allem anderen */
             }
 
             .contact-form-container.open {
                 transform: translateY(0) !important;
                 opacity: 1 !important;
+                pointer-events: all !important;
+                visibility: visible !important;
             }
 
             .contact-form-content {
