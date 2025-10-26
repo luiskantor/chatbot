@@ -640,6 +640,9 @@
             line-height: 1.5;
             color: #374151;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .message.user .message-content {
@@ -2816,6 +2819,13 @@
                             }, 1500);
                         }, 500);
                     }
+                }
+
+                // Prüfe auf "kontakt" und öffne Kontaktformular
+                if (message.toLowerCase().includes('kontakt')) {
+                    setTimeout(() => {
+                        openContactForm();
+                    }, 500);
                 }
 
                 // Prüfe auf Trigger-Wörter für Final Feedback
