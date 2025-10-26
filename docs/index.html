@@ -1761,26 +1761,29 @@
 
             /* Kontaktformular - Fullscreen auf Mobile */
             .contact-form-container {
-                width: 100vw !important;
-                height: 100dvh !important;
-                max-height: 100dvh !important;
-                bottom: 0 !important;
-                right: 0 !important;
-                top: 0 !important;
-                left: 0 !important;
-                border-radius: 0 !important;
-                transform: translateY(100%) !important; /* Von unten reinsliden */
-                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
-                pointer-events: none !important;
-                visibility: hidden !important;
-                z-index: 1000 !important; /* Über allem anderen */
+                width: 100vw;
+                height: 100dvh;
+                max-height: 100dvh;
+                bottom: 0;
+                right: 0;
+                top: 0;
+                left: 0;
+                border-radius: 0;
+                z-index: 1000;
+            }
+
+            .contact-form-container:not(.open) {
+                transform: translateY(100%);
+                opacity: 0;
+                pointer-events: none;
+                visibility: hidden;
             }
 
             .contact-form-container.open {
-                transform: translateY(0) !important;
-                opacity: 1 !important;
-                pointer-events: all !important;
-                visibility: visible !important;
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: all;
+                visibility: visible;
             }
 
             .contact-form-content {
