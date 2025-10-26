@@ -1771,9 +1771,7 @@
                 border-radius: 0 !important;
                 z-index: 1000 !important;
                 transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
-            }
-
-            .contact-form-container:not(.open) {
+                /* Geschlossener Zustand als Standard */
                 transform: translateY(100%) !important;
                 opacity: 0 !important;
                 pointer-events: none !important;
@@ -3069,8 +3067,11 @@
             const contactFormContainer = document.getElementById('contactFormContainer');
 
             // Kontaktformular verstecken, Chat anzeigen
+            console.log('Entferne .open von Kontaktformular');
             contactFormContainer.classList.remove('open');
+            console.log('Füge .open zu Chat hinzu');
             chatContainer.classList.add('open');
+            console.log('closeContactForm() abgeschlossen');
         }
 
         // Tracking ob Feedback bereits angezeigt wurde
