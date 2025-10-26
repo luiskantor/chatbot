@@ -1771,20 +1771,13 @@
                 left: 0 !important;
                 border-radius: 0 !important;
                 z-index: 1000 !important;
-                /* Geschlossener Zustand als Standard */
+                /* Mobile Slide-in Animation */
                 transform: translateY(100%) !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
-                visibility: hidden !important;
-                /* Transition NUR für transform und opacity, NICHT für pointer-events/visibility */
-                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
+                transition: transform 0.4s ease-in-out !important;
             }
 
             .contact-form-container.open {
                 transform: translateY(0) scale(1) !important;
-                opacity: 1 !important;
-                pointer-events: all !important;
-                visibility: visible !important;
             }
 
             .contact-form-content {
@@ -3058,10 +3051,6 @@
             const chatContainer = document.getElementById('chatContainer');
             const contactFormContainer = document.getElementById('contactFormContainer');
 
-            // Inline-Styles entfernen (falls von closeContactForm gesetzt)
-            contactFormContainer.style.pointerEvents = '';
-            contactFormContainer.style.visibility = '';
-
             // Chat verstecken, Kontaktformular anzeigen
             chatContainer.classList.remove('open');
             contactFormContainer.classList.add('open');
@@ -3072,20 +3061,9 @@
             const chatContainer = document.getElementById('chatContainer');
             const contactFormContainer = document.getElementById('contactFormContainer');
 
-            // WICHTIG: Pointer-events SOFORT deaktivieren, BEVOR Klasse entfernt wird
-            contactFormContainer.style.pointerEvents = 'none';
-            contactFormContainer.style.visibility = 'hidden';
-
             // Kontaktformular verstecken, Chat anzeigen
-            console.log('Entferne .open von Kontaktformular');
             contactFormContainer.classList.remove('open');
-
-            // Kurzes Delay bevor Chat geöffnet wird (für saubere Animation)
-            setTimeout(() => {
-                console.log('Füge .open zu Chat hinzu');
-                chatContainer.classList.add('open');
-                console.log('closeContactForm() abgeschlossen');
-            }, 50);
+            chatContainer.classList.add('open');
         }
 
         // Tracking ob Feedback bereits angezeigt wurde
