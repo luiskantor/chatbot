@@ -1447,12 +1447,12 @@
                 font-size: 11px !important;
             }
 
-            /* Feedback-Icons und Separator komplett auf Mobile ausblenden */
+            /* Feedback-Icons und Separator komplett auf Mobile ausblenden - NUR in message-timestamp */
             .feedback-separator {
                 display: none !important;
             }
 
-            .feedback-buttons {
+            .message-timestamp .feedback-buttons {
                 display: none !important;
             }
 
@@ -1770,10 +1770,12 @@
                 left: 0 !important;
                 border-radius: 0 !important;
                 transform: translateY(100%) !important; /* Von unten reinsliden */
+                transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out !important;
             }
 
             .contact-form-container.open {
                 transform: translateY(0) !important;
+                opacity: 1 !important;
             }
 
             .contact-form-content {
