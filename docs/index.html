@@ -1771,13 +1771,25 @@
                 left: 0 !important;
                 border-radius: 0 !important;
                 z-index: 1000 !important;
-                /* Mobile Slide-in Animation */
+                /* Geschlossener Zustand */
                 transform: translateY(100%) !important;
-                transition: transform 0.4s ease-in-out !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                visibility: hidden !important;
+                /* Alle Properties animieren für sanfte Transition */
+                transition: transform 0.4s ease-in-out !important,
+                           opacity 0.4s ease-in-out !important,
+                           visibility 0s 0.4s !important;
             }
 
             .contact-form-container.open {
-                transform: translateY(0) scale(1) !important;
+                transform: translateY(0) !important;
+                opacity: 1 !important;
+                pointer-events: all !important;
+                visibility: visible !important;
+                transition: transform 0.4s ease-in-out !important,
+                           opacity 0.4s ease-in-out !important,
+                           visibility 0s 0s !important;
             }
 
             .contact-form-content {
