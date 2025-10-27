@@ -3431,6 +3431,23 @@
                 // Typing-Indikator ausblenden
                 hideTypingText();
 
+                // Handle special actions from backend
+                if (response.action === 'open_contact_form') {
+                    addBotMessage(response.message);
+                    setTimeout(() => {
+                        openContactForm();
+                    }, 500);
+                    return;
+                }
+
+                if (response.action === 'termin') {
+                    // Für später: Termin-Flow
+                    const input = document.getElementById('messageInput');
+                    input.value = 'termin';
+                    sendMessage();
+                    return;
+                }
+
                 // Bot-Antwort anzeigen
                 if (response.message) {
                     addBotMessage(response.message);
