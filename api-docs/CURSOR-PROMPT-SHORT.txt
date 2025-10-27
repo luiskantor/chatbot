@@ -1,0 +1,89 @@
+CURSOR PROMPT: Chatbot Frontend für n8n Backend Integration
+================================================================
+
+KONTEXT:
+Ich habe ein vollständiges Chatbot-Frontend (index.html) mit Mock-Daten und simulierter Bot-Logik. 
+Das Frontend muss jetzt mit einem produktiven n8n Workflow-Backend verbunden werden.
+
+ZIEL:
+Transformiere das Frontend von Mock-Daten zu echten API-Calls, während die komplette UI/UX erhalten bleibt.
+
+DATEIEN IM CONTEXT:
+- index.html (aktuelles Frontend)
+- cursor-prompt.md (detaillierte Schritt-für-Schritt-Anleitung)
+- cursor-context-api-docs.json (API-Spezifikation)
+- api-reference-compact.json (Kurzreferenz)
+
+AUFGABEN:
+
+1. MOCK-LOGIK ENTFERNEN:
+   ❌ Alle hardcodierten Bot-Antworten in sendMessage()
+   ❌ Alle if/else-Logik für Keyword-Matching
+   ❌ Mock-Erfolgs-Responses in submitBookingForm()
+   ❌ Mock-Daten in submitFeedbackForm()
+   ❌ Mock-Bestätigungen in submitContactForm()
+   ❌ Alle console.log() mit Mock-Daten
+
+2. SESSION MANAGEMENT IMPLEMENTIEREN:
+   ✅ UUID v4 Generator-Funktion
+   ✅ Session-ID in localStorage speichern
+   ✅ Session-ID bei jedem API-Call mitsenden
+
+3. API-INTEGRATION:
+   ✅ API_CONFIG Objekt mit Base-URL und Endpoints
+   ✅ Generische apiCall() Funktion mit Error-Handling
+   ✅ Timeout nach 12 Sekunden
+   ✅ Alle Formulare mit API verbinden:
+      - sendMessage() → /webhook/chat
+      - submitBookingForm() → /webhook/booking-ops
+      - submitFeedbackForm() → /webhook/feedback
+      - submitContactForm() → /webhook/handover
+      - handleFeedback() → /webhook/feedback (für Thumbs Up/Down)
+
+4. ERROR-HANDLING:
+   ✅ Try-Catch für alle API-Calls
+   ✅ Benutzerfreundliche Fehlermeldungen
+   ✅ Timeout-Handling
+   ✅ Netzwerk-Fehler abfangen
+   ✅ Loading-States während API-Calls
+
+5. HELPER-FUNKTIONEN:
+   ✅ addBotMessage() für Bot-Antworten
+   ✅ addQuickReplies() für Schnellantwort-Buttons (optional vom Backend)
+   ✅ Error-Handler für kritische Fehler
+
+WAS BLEIBT UNVERÄNDERT:
+✅ Komplettes UI/UX Design
+✅ Alle CSS-Styles
+✅ HTML-Struktur
+✅ Animationen und Transitions
+✅ Formular-Validierungen (Client-Side)
+✅ Event-Listener
+✅ Typing-Indikator UI
+✅ Feedback-Button-Interaktionen
+
+WICHTIGE HINWEISE:
+- Session-ID MUSS UUID v4 Format haben
+- Base-URL muss auf echte n8n-Domain gesetzt werden: https://n8n.DEINE-DOMAIN.de
+- Alle API-Calls brauchen Content-Type: application/json
+- Loading-States IMMER anzeigen
+- Alle bestehenden UI-Funktionen beibehalten
+- **DATUMSFORMAT: ISO (YYYY-MM-DD) an API senden, deutsches Format (DD.MM.YYYY) in UI anzeigen**
+
+VORGEHEN:
+Folge der cursor-prompt.md Schritt für Schritt.
+Beginne mit Schritt 1 (Mock-Logik identifizieren) und arbeite dich durch bis Schritt 6.
+
+Nutze die api-reference-compact.json für Request/Response-Beispiele.
+
+TESTING NACH MIGRATION:
+- [ ] Session-ID wird generiert und persistiert
+- [ ] Chat sendet Nachrichten an API
+- [ ] Bot-Antworten werden korrekt angezeigt
+- [ ] Buchungsformular funktioniert
+- [ ] Feedback-System funktioniert
+- [ ] Kontaktformular funktioniert
+- [ ] Error-Handling funktioniert
+- [ ] Loading-States werden angezeigt
+
+Bitte starte jetzt mit der Migration!

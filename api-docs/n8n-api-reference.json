@@ -1,0 +1,100 @@
+{
+  "api_base_url": "https://dein-n8n-server.com",
+  "endpoints": {
+    "chat": {
+      "path": "/webhook/chat",
+      "method": "POST",
+      "description": "Hauptchat-Endpoint für Benutzeranfragen",
+      "request_body": {
+        "content": "string - Die Benutzernachricht",
+        "session_id": "string - Optional: Session ID für Kontext"
+      },
+      "response": {
+        "message": "string - Die Bot-Antwort",
+        "session_id": "string - Session ID",
+        "quick_replies": "array - Optional: Schnellantworten",
+        "requires_booking": "boolean - Ob Buchung nötig ist"
+      }
+    },
+    "booking_operations": {
+      "path": "/webhook/booking-ops",
+      "method": "POST",
+      "description": "Buchungsoperationen (Erstellen, Stornieren, Ändern)",
+      "request_body": {
+        "action": "string - create/cancel/modify",
+        "session_id": "string",
+        "booking_data": {
+          "service": "string",
+          "date": "string (ISO)",
+          "time": "string",
+          "customer_name": "string",
+          "customer_email": "string",
+          "customer_phone": "string"
+        }
+      },
+      "response": {
+        "success": "boolean",
+        "booking_id": "string",
+        "message": "string",
+        "confirmation_details": "object"
+      }
+    },
+    "feedback": {
+      "path": "/webhook/feedback",
+      "method": "POST",
+      "description": "Feedback und Bewertungen",
+      "request_body": {
+        "session_id": "string",
+        "rating": "number (1-5)",
+        "comment": "string - Optional",
+        "type": "string - general/resolution"
+      },
+      "response": {
+        "success": "boolean",
+        "message": "string"
+      }
+    },
+    "handover": {
+      "path": "/webhook/handover",
+      "method": "POST",
+      "description": "Übergabe an menschlichen Support",
+      "request_body": {
+        "session_id": "string",
+        "reason": "string",
+        "customer_email": "string"
+      },
+      "response": {
+        "success": "boolean",
+        "handover_id": "string",
+        "message": "string"
+      }
+    }
+  },
+  "data_structures": {
+    "session": {
+      "session_id": "UUID string",
+      "created_at": "ISO timestamp",
+      "resolved": "boolean",
+      "messages": "array of message objects"
+    },
+    "message": {
+      "role": "string - user/assistant",
+      "content": "string",
+      "timestamp": "ISO timestamp"
+    },
+    "quick_reply": {
+      "text": "string - Anzeigetext",
+      "payload": "string - Zu sendende Nachricht"
+    }
+  },
+  "ai_models": {
+    "chat": "gpt-4o-mini",
+    "embeddings": "text-embedding-3-small"
+  },
+  "wichtige_hinweise": [
+    "Session IDs sollten im Frontend generiert und persistiert werden",
+    "Alle Endpoints erwarten Content-Type: application/json",
+    "Fehlerbehandlung für Timeouts und Netzwerkfehler einbauen",
+    "Loading-States während API-Calls anzeigen"
+  ]
+}

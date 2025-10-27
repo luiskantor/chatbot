@@ -1,0 +1,251 @@
+{
+  "project_name": "Prime Marketing Chatbot Integration",
+  "backend": "n8n Workflow",
+  "base_url": "https://DEINE-N8N-DOMAIN.com",
+  
+  "endpoints": {
+    "chat": {
+      "url": "/webhook/chat",
+      "method": "POST",
+      "description": "Hauptchat-Endpoint für FAQ und allgemeine Anfragen",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request_body": {
+        "content": {
+          "type": "string",
+          "required": true,
+          "description": "Die Benutzernachricht"
+        },
+        "session_id": {
+          "type": "string",
+          "required": true,
+          "description": "Eindeutige Session-ID (UUID v4). Muss vom Frontend generiert und persistiert werden."
+        }
+      },
+      "response_example": {
+        "message": "Ich kann dir bei verschiedenen Themen helfen...",
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "timestamp": "2025-01-15T10:30:00Z",
+        "requires_booking": false,
+        "quick_replies": [
+          {
+            "text": "Termin vereinbaren",
+            "payload": "Ich möchte einen Termin vereinbaren"
+          }
+        ]
+      },
+      "error_handling": {
+        "timeout": 12000,
+        "retry_strategy": "Exponential backoff mit max 3 Versuchen"
+      }
+    },
+    
+    "booking_operations": {
+      "url": "/webhook/booking-ops",
+      "method": "POST",
+      "description": "Buchungsoperationen (Erstellen, Ändern, Stornieren)",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request_body": {
+        "action": {
+          "type": "string",
+          "enum": ["create", "modify", "cancel"],
+          "required": true
+        },
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "booking_data": {
+          "type": "object",
+          "required_for_create": true,
+          "fields": {
+            "service": {
+              "type": "string",
+              "required": true,
+              "example": "Beratungsgespräch"
+            },
+            "date": {
+              "type": "string",
+              "format": "ISO 8601 für API-Input (YYYY-MM-DD), deutsches Format für Ausgabe (DD.MM.YYYY)",
+              "required": true,
+              "example": "2025-02-15",
+              "display_format": "15.02.2025"
+            },
+            "time": {
+              "type": "string",
+              "format": "HH:MM",
+              "required": true,
+              "example": "14:30"
+            },
+            "customer_name": {
+              "type": "string",
+              "required": true,
+              "example": "Max Mustermann"
+            },
+            "customer_email": {
+              "type": "string",
+              "format": "email",
+              "required": true,
+              "example": "max@example.com"
+            },
+            "customer_phone": {
+              "type": "string",
+              "required": false,
+              "example": "+49 123 456789"
+            }
+          }
+        }
+      },
+      "response_example": {
+        "success": true,
+        "booking_id": "book_abc123",
+        "message": "Ihr Termin wurde erfolgreich gebucht",
+        "confirmation_details": {
+          "service": "Beratungsgespräch",
+          "date": "2025-02-15",
+          "time": "14:30",
+          "location": "Online / Vor Ort"
+        }
+      }
+    },
+    
+    "feedback": {
+      "url": "/webhook/feedback",
+      "method": "POST",
+      "description": "Feedback und Bewertungen sammeln",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request_body": {
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "rating": {
+          "type": "number",
+          "min": 1,
+          "max": 5,
+          "required": true,
+          "description": "Bewertung von 1-5 Sternen"
+        },
+        "comment": {
+          "type": "string",
+          "required": false,
+          "description": "Optional: Freitext-Kommentar"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["general", "resolution", "message"],
+          "default": "general",
+          "description": "Art des Feedbacks"
+        },
+        "message_id": {
+          "type": "string",
+          "required": false,
+          "description": "Optional: Referenz auf spezifische Nachricht (für thumbs up/down)"
+        }
+      },
+      "response_example": {
+        "success": true,
+        "message": "Vielen Dank für dein Feedback!"
+      }
+    },
+    
+    "handover": {
+      "url": "/webhook/handover",
+      "method": "POST",
+      "description": "Übergabe an menschlichen Support/Kontaktformular",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "request_body": {
+        "session_id": {
+          "type": "string",
+          "required": true
+        },
+        "reason": {
+          "type": "string",
+          "required": true,
+          "description": "Grund für die Übergabe"
+        },
+        "customer_name": {
+          "type": "string",
+          "required": true
+        },
+        "customer_email": {
+          "type": "string",
+          "format": "email",
+          "required": true
+        },
+        "customer_message": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "response_example": {
+        "success": true,
+        "handover_id": "hand_xyz789",
+        "message": "Vielen Dank! Unser Team wird sich in Kürze bei dir melden."
+      }
+    }
+  },
+  
+  "frontend_requirements": {
+    "session_management": {
+      "description": "Session-ID muss vom Frontend generiert und persistiert werden",
+      "implementation": "localStorage oder sessionStorage",
+      "format": "UUID v4",
+      "persistence": "Pro Browser-Tab oder pro Gerät"
+    },
+    "error_handling": {
+      "network_errors": "Freundliche Fehlermeldung mit Retry-Option",
+      "timeout_errors": "Nach 12 Sekunden Timeout",
+      "validation_errors": "Client-seitige Validierung vor API-Call"
+    },
+    "loading_states": {
+      "chat_message": "Typing-Indikator während API-Call",
+      "booking": "Loading-Spinner im Booking-Formular",
+      "feedback": "Button-State-Change nach Submit"
+    },
+    "ui_feedback": {
+      "success": "Grüne Bestätigungsnachrichten",
+      "error": "Rote Fehlermeldungen mit hilfreichen Hinweisen",
+      "info": "Blaue Info-Meldungen für Hinweise"
+    }
+  },
+  
+  "data_structures": {
+    "message": {
+      "role": "user | assistant",
+      "content": "string",
+      "timestamp": "ISO 8601 string",
+      "type": "text | booking | feedback | handover"
+    },
+    "quick_reply": {
+      "text": "Anzeigetext für Button",
+      "payload": "Text, der beim Klick gesendet wird"
+    }
+  },
+  
+  "ai_config": {
+    "chat_model": "gpt-4o-mini",
+    "embedding_model": "text-embedding-3-small",
+    "max_tokens": 200,
+    "temperature": 0.2,
+    "style": "Freundlich, Du-Form, kurz und präzise"
+  },
+  
+  "wichtige_hinweise": [
+    "Alle API-Calls müssen Content-Type: application/json Header haben",
+    "Session-IDs MÜSSEN UUID v4 Format haben",
+    "Timeouts nach 12 Sekunden implementieren",
+    "Loading-States während aller API-Calls anzeigen",
+    "Client-seitige Validierung BEVOR API-Calls",
+    "Feedback-Buttons nur nach erfolgreicher Bot-Antwort anzeigen",
+    "LocalStorage für Session-Persistenz nutzen",
+    "WICHTIG: Datumsangaben an API im ISO-Format senden (YYYY-MM-DD), aber in UI im deutschen Format anzeigen (DD.MM.YYYY)"
+  ]
+}

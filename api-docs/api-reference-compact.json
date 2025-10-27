@@ -1,0 +1,232 @@
+{
+  "projekt": "Prime Marketing Chatbot - n8n Backend Integration",
+  "version": "1.0",
+  "backend_type": "n8n Workflow",
+  
+  "api_endpoints": {
+    "base_url": "https://DEINE-N8N-DOMAIN.com",
+    
+    "chat": {
+      "url": "/webhook/chat",
+      "method": "POST",
+      "description": "Hauptchat für FAQ und Konversationen",
+      "request": {
+        "content": "string (required) - Benutzernachricht",
+        "session_id": "string (required) - UUID v4 Format"
+      },
+      "response": {
+        "message": "string - Bot-Antwort",
+        "session_id": "string - Session-ID",
+        "quick_replies": "array (optional) - Schnellantwort-Buttons",
+        "requires_booking": "boolean (optional)"
+      },
+      "example_request": {
+        "content": "Ich möchte einen Termin vereinbaren",
+        "session_id": "550e8400-e29b-41d4-a716-446655440000"
+      },
+      "example_response": {
+        "message": "Gerne! Für welchen Service möchtest du einen Termin?",
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "quick_replies": [
+          {
+            "text": "Beratungsgespräch",
+            "payload": "Ich möchte ein Beratungsgespräch"
+          },
+          {
+            "text": "Workshop",
+            "payload": "Ich interessiere mich für einen Workshop"
+          }
+        ]
+      }
+    },
+    
+    "booking": {
+      "url": "/webhook/booking-ops",
+      "method": "POST",
+      "description": "Buchungsoperationen (Erstellen, Ändern, Stornieren)",
+      "request": {
+        "action": "string (required) - 'create' | 'modify' | 'cancel'",
+        "session_id": "string (required)",
+        "booking_data": {
+          "service": "string (required)",
+          "date": "string (required) - ISO 8601 Format für API: YYYY-MM-DD (Anzeige in UI: DD.MM.YYYY)",
+          "time": "string (required) - Format: HH:MM",
+          "customer_name": "string (required)",
+          "customer_email": "string (required) - Email-Format",
+          "customer_phone": "string (optional)"
+        }
+      },
+      "response": {
+        "success": "boolean",
+        "booking_id": "string",
+        "message": "string",
+        "confirmation_details": "object"
+      },
+      "example_request": {
+        "action": "create",
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "booking_data": {
+          "service": "Beratungsgespräch",
+          "date": "2025-02-15",
+          "time": "14:30",
+          "customer_name": "Max Mustermann",
+          "customer_email": "max@example.com",
+          "customer_phone": "+49 123 456789"
+        }
+      },
+      "example_response": {
+        "success": true,
+        "booking_id": "book_abc123xyz",
+        "message": "Dein Termin wurde erfolgreich gebucht!",
+        "confirmation_details": {
+          "service": "Beratungsgespräch",
+          "date": "15.02.2025",
+          "time": "14:30 Uhr",
+          "location": "Online via Zoom"
+        }
+      }
+    },
+    
+    "feedback": {
+      "url": "/webhook/feedback",
+      "method": "POST",
+      "description": "Feedback und Bewertungen sammeln",
+      "request": {
+        "session_id": "string (required)",
+        "rating": "number (required) - 1-5",
+        "comment": "string (optional)",
+        "type": "string (optional) - 'general' | 'resolution' | 'message'",
+        "message_id": "string (optional) - Für Thumbs Up/Down auf Nachrichten"
+      },
+      "response": {
+        "success": "boolean",
+        "message": "string"
+      },
+      "example_request_general": {
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "rating": 5,
+        "comment": "Super Service, sehr hilfreich!",
+        "type": "general"
+      },
+      "example_request_thumbs": {
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "rating": 5,
+        "type": "message",
+        "message_id": "msg_123"
+      },
+      "example_response": {
+        "success": true,
+        "message": "Vielen Dank für dein Feedback!"
+      }
+    },
+    
+    "handover": {
+      "url": "/webhook/handover",
+      "method": "POST",
+      "description": "Übergabe an menschlichen Support / Kontaktformular",
+      "request": {
+        "session_id": "string (required)",
+        "reason": "string (required) - Grund der Kontaktaufnahme",
+        "customer_name": "string (required)",
+        "customer_email": "string (required)",
+        "customer_message": "string (required)"
+      },
+      "response": {
+        "success": "boolean",
+        "handover_id": "string",
+        "message": "string"
+      },
+      "example_request": {
+        "session_id": "550e8400-e29b-41d4-a716-446655440000",
+        "reason": "Individuelle Beratung gewünscht",
+        "customer_name": "Max Mustermann",
+        "customer_email": "max@example.com",
+        "customer_message": "Ich hätte gerne eine persönliche Beratung zu euren Premium-Paketen."
+      },
+      "example_response": {
+        "success": true,
+        "handover_id": "hand_xyz789",
+        "message": "Vielen Dank für deine Nachricht! Unser Team wird sich in Kürze bei dir melden."
+      }
+    }
+  },
+  
+  "implementation_details": {
+    "session_management": {
+      "format": "UUID v4",
+      "storage": "localStorage mit Key 'chatbot_session_id'",
+      "generation": "Client-seitig beim ersten Laden",
+      "persistence": "Pro Browser/Gerät"
+    },
+    
+    "error_handling": {
+      "timeout": "12000ms (12 Sekunden)",
+      "retry_strategy": "Optional: Exponential Backoff",
+      "user_feedback": "Freundliche Fehlermeldungen in der UI"
+    },
+    
+    "headers": {
+      "Content-Type": "application/json",
+      "note": "Keine API-Keys im Frontend erforderlich (werden von n8n Webhooks gehandhabt)"
+    },
+    
+    "validation": {
+      "client_side": "Vor jedem API-Call",
+      "fields": {
+        "email": "Standard Email-Regex",
+        "name": "Mindestens 2 Zeichen",
+        "phone": "Optional, aber wenn angegeben validieren",
+        "date": "Nicht in Vergangenheit",
+        "message": "Mindestens 10 Zeichen"
+      }
+    }
+  },
+  
+  "ui_states": {
+    "loading": {
+      "chat": "Typing-Indikator anzeigen",
+      "forms": "Button disabled + Text ändern zu 'Wird gesendet...'",
+      "booking": "Loading-Spinner im Formular"
+    },
+    "success": {
+      "visual": "Grüne Bestätigung",
+      "message": "In Chat-Nachricht anzeigen",
+      "button": "Checkmark-Icon + Text 'Gesendet ✓'"
+    },
+    "error": {
+      "visual": "Rote Fehlermeldung",
+      "message": "Konkrete Fehlerbeschreibung",
+      "action": "Retry-Option anbieten"
+    }
+  },
+  
+  "n8n_workflow_info": {
+    "ai_model": "gpt-4o-mini",
+    "embedding_model": "text-embedding-3-small",
+    "max_tokens": 200,
+    "temperature": 0.2,
+    "style": "Freundlich, Du-Form, kurz und präzise",
+    "rag_enabled": true,
+    "database": "Supabase",
+    "email_service": "Integriert für Bestätigungen"
+  },
+  
+  "wichtige_hinweise": [
+    "Session-ID MUSS UUID v4 Format haben",
+    "Alle Datumsangaben im ISO 8601 Format AN DIE API senden (YYYY-MM-DD)",
+    "Datumsangaben in der UI im deutschen Format anzeigen (DD.MM.YYYY)",
+    "Zeit-Format: HH:MM (24-Stunden-Format)",
+    "Email-Validierung vor API-Call durchführen",
+    "Loading-States IMMER während API-Calls anzeigen",
+    "Timeouts nach 12 Sekunden implementieren",
+    "Fehler benutzerfreundlich darstellen",
+    "Quick-Replies sind optional, UI muss damit umgehen können",
+    "Feedback-Buttons nur nach erfolgreichen Bot-Antworten anzeigen",
+    "LocalStorage-Fallback implementieren falls blockiert"
+  ],
+  
+  "testing_endpoints": {
+    "note": "Für Testing solltest du separate Test-Webhooks in n8n erstellen",
+    "suggestion": "Verwende /webhook/chat-test, /webhook/booking-ops-test etc."
+  }
+}
