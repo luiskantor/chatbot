@@ -2072,7 +2072,7 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="icon-button" onclick="toggleChat()" title="Schließen">
+                <button class="icon-button" onclick="closeContactFormCompletely()" title="Schließen">
                     <svg viewBox="0 0 24 24">
                         <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
@@ -3075,13 +3075,27 @@
         }
 
         function closeContactForm() {
-            console.log('Schließe Kontaktformular...');
+            console.log('Schließe Kontaktformular, gehe zurück zum Chat...');
             const chatContainer = document.getElementById('chatContainer');
             const contactFormContainer = document.getElementById('contactFormContainer');
 
             // Kontaktformular verstecken, Chat anzeigen
             contactFormContainer.classList.remove('open');
             chatContainer.classList.add('open');
+        }
+
+        function closeContactFormCompletely() {
+            console.log('Schließe Kontaktformular komplett...');
+            const chatContainer = document.getElementById('chatContainer');
+            const contactFormContainer = document.getElementById('contactFormContainer');
+            const button = document.getElementById('chatButton');
+
+            // Kontaktformular schließen
+            contactFormContainer.classList.remove('open');
+
+            // Chat auch schließen
+            chatContainer.classList.remove('open');
+            button.classList.remove('open');
         }
 
         // Tracking ob Feedback bereits angezeigt wurde
