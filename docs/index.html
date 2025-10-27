@@ -3543,6 +3543,14 @@
                 if (response.action === 'slot_selection' && response.slots) {
                     addBotMessage(response.message);
                     displaySlotButtons(response.slots);
+                    
+                    // Zeige Hinweis-Nachricht nach kurzer Verzögerung
+                    if (response.additional_message) {
+                        setTimeout(() => {
+                            addBotMessage(response.additional_message);
+                        }, 800);
+                    }
+                    
                     return;
                 }
 
