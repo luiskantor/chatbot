@@ -1782,9 +1782,9 @@
                 opacity: 1 !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
-                /* Clean simple slide-in - nur transform animieren */
-                transition: transform 0.25s ease-out !important,
-                           visibility 0s 0.25s !important;
+                /* Einfache ease-in-out Animation - kein Bounce */
+                transition: transform 0.3s ease-in-out !important,
+                           visibility 0s 0.3s !important;
             }
 
             .contact-form-container.open {
@@ -1792,8 +1792,8 @@
                 opacity: 1 !important;
                 pointer-events: all !important;
                 visibility: visible !important;
-                /* Clean simple slide-in - nur transform animieren */
-                transition: transform 0.25s ease-out !important,
+                /* Einfache ease-in-out Animation - kein Bounce */
+                transition: transform 0.3s ease-in-out !important,
                            visibility 0s 0s !important;
             }
 
