@@ -1782,10 +1782,10 @@
                 opacity: 0 !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
-                /* Alle Properties animieren für sanfte Transition */
-                transition: transform 0.4s ease-in-out !important,
-                           opacity 0.4s ease-in-out !important,
-                           visibility 0s 0.4s !important;
+                /* Einfache ease Transition */
+                transition: transform 0.3s ease !important,
+                           opacity 0.3s ease !important,
+                           visibility 0s 0.3s !important;
             }
 
             .contact-form-container.open {
@@ -1793,8 +1793,8 @@
                 opacity: 1 !important;
                 pointer-events: all !important;
                 visibility: visible !important;
-                transition: transform 0.4s ease-in-out !important,
-                           opacity 0.4s ease-in-out !important,
+                transition: transform 0.3s ease !important,
+                           opacity 0.3s ease !important,
                            visibility 0s 0s !important;
             }
 
@@ -2098,7 +2098,7 @@
                     </div>
 
                     <div class="form-group">
-                        <textarea class="booking-input contact-textarea" id="contactMessage" placeholder="Ich würde gerne Kontakt aufnehmen."></textarea>
+                        <textarea class="booking-input contact-textarea" id="contactMessage" placeholder="Ihre Nachricht..."></textarea>
                         <div class="error-message" id="contactMessageError" style="display: none;">Bitte geben Sie eine Nachricht ein (mind. 10 Zeichen)</div>
                     </div>
 
@@ -2984,7 +2984,7 @@
                 userMessage.innerHTML = `
                     <div>
                         <div class="message-content">
-                            Kontakt aufnehmen
+                            Ich würde gerne Kontakt aufnehmen.
                         </div>
                         <div class="message-timestamp">
                             <span>${getCurrentTime()}</span>
