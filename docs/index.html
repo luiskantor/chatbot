@@ -2980,6 +2980,98 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        // ====================================
+        // SLOT-SELECTION FUNKTIONEN
+        // ====================================
+
+        /**
+         * Zeigt Slot-Buttons für Terminauswahl an
+         * @param {Array} slots - Array von {label, value} Objekten
+         */
+        function displaySlotButtons(slots) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Container für Slot-Buttons (wie Quick-Reply Buttons)
+            const slotContainer = document.createElement('div');
+            slotContainer.className = 'quick-actions-message';
+            slotContainer.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-top: 16px;';
+            
+            // Erstelle Button für jeden Slot
+            slots.forEach(slot => {
+                const button = document.createElement('button');
+                button.className = 'quick-action-chat-btn';
+                button.textContent = slot.label;
+                
+                button.onclick = () => {
+                    selectSlot(slot);
+                };
+                
+                slotContainer.appendChild(button);
+            });
+            
+            // Füge Container zur letzten Bot-Nachricht hinzu
+            const lastBotMessage = chatMessages.querySelector('.message.bot:last-of-type .message-content');
+            if (lastBotMessage) {
+                lastBotMessage.appendChild(slotContainer);
+            } else {
+                chatMessages.appendChild(slotContainer);
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        /**
+         * Verarbeitet Slot-Auswahl
+         * @param {Object} slot - Slot-Objekt mit label und value
+         */
+        function selectSlot(slot) {
+            // Zeige User-Auswahl im Chat
+            addUserMessage(slot.label);
+            
+            // Sende Slot-Auswahl an Backend
+            sendSlotSelection(slot.value);
+        }
+
+        /**
+         * Sendet ausgewählten Slot an Backend
+         * @param {Object} slotData - Slot-Daten mit datetime und slot_id
+         */
+        async function sendSlotSelection(slotData) {
+            const sessionId = getOrCreateSessionId();
+            
+            // Typing-Indikator anzeigen
+            showTypingText();
+            
+            try {
+                const response = await apiCall(API_CONFIG.endpoints.chat, {
+                    content: '__SLOT_SELECTED__',
+                    session_id: sessionId,
+                    booking_data: {
+                        datetime: slotData.datetime,
+                        slot_id: slotData.slot_id
+                    }
+                });
+                
+                // Typing-Indikator ausblenden
+                hideTypingText();
+                
+                // Verarbeite Response (z.B. Name/Email Form)
+                if (response.action === 'show_booking_form') {
+                    addBotMessage(response.message);
+                    // Hier könnte displayBookingForm() aufgerufen werden
+                } else if (response.message) {
+                    addBotMessage(response.message);
+                }
+                
+            } catch (error) {
+                // Typing-Indikator ausblenden
+                hideTypingText();
+                
+                console.error('Error selecting slot:', error);
+                showErrorMessage('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
+            }
+        }
+
         // Funktionen für Typing Text Indicator über Input-Feld
         function showTypingText() {
             const indicator = document.getElementById('typingTextIndicator');
@@ -3345,7 +3437,7 @@
                 }
 
                 // Typing-Indikator anzeigen
-                showTypingText();
+                    showTypingText();
 
                 try {
                     // API-Call zur Buchung
@@ -3362,7 +3454,7 @@
                     });
 
                     // Typing-Indikator ausblenden
-                    hideTypingText();
+                        hideTypingText();
 
                     // Bestätigungsnachricht anzeigen
                     if (response.message) {
@@ -3372,7 +3464,7 @@
                         addBotMessage(`Vielen Dank! Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungsmail an <span style="color: #B7483E;">${email}</span>.`);
                     }
 
-                    // Final Feedback nach Termin-Buchung anzeigen
+                        // Final Feedback nach Termin-Buchung anzeigen
                     setTimeout(() => {
                         showFinalFeedback();
                     }, 1000);
@@ -3408,15 +3500,15 @@
 
             if (!message) return;
 
-            // User hat geschrieben - Flag setzen
-            userHasWritten = true;
+                // User hat geschrieben - Flag setzen
+                userHasWritten = true;
 
             // User-Nachricht hinzufügen
             addUserMessage(message);
 
-            // Input leeren
-            input.value = '';
-            input.style.height = 'auto';
+                // Input leeren
+                input.value = '';
+                input.style.height = 'auto';
 
             // Typing-Indikator anzeigen
             showTypingText();
@@ -3434,7 +3526,7 @@
                 // Handle special actions from backend
                 if (response.action === 'open_contact_form') {
                     addBotMessage(response.message);
-                    setTimeout(() => {
+                            setTimeout(() => {
                         openContactForm();
                     }, 500);
                     return;
@@ -3445,6 +3537,12 @@
                     const input = document.getElementById('messageInput');
                     input.value = 'termin';
                     sendMessage();
+                    return;
+                }
+
+                if (response.action === 'slot_selection' && response.slots) {
+                    addBotMessage(response.message);
+                    displaySlotButtons(response.slots);
                     return;
                 }
 
@@ -3959,34 +4057,34 @@
                         });
 
                         // Erfolg: Button-Text ändern
-                        submitBtn.textContent = 'Gesendet ✓';
+                submitBtn.textContent = 'Gesendet ✓';
 
                         // Nach kurzem Delay zurück zum Chat
-                        setTimeout(() => {
-                            closeContactForm();
+                setTimeout(() => {
+                    closeContactForm();
 
-                            // Formular zurücksetzen
-                            setTimeout(() => {
-                                nameInput.value = '';
-                                emailInput.value = '';
-                                messageInput.value = '';
-                                privacyCheckbox.checked = false;
+                    // Formular zurücksetzen
+                    setTimeout(() => {
+                        nameInput.value = '';
+                        emailInput.value = '';
+                        messageInput.value = '';
+                        privacyCheckbox.checked = false;
 
-                                nameInput.disabled = false;
-                                emailInput.disabled = false;
-                                messageInput.disabled = false;
-                                privacyCheckbox.disabled = false;
+                        nameInput.disabled = false;
+                        emailInput.disabled = false;
+                        messageInput.disabled = false;
+                        privacyCheckbox.disabled = false;
 
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = 'Nachricht senden';
-                            }, 500);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Nachricht senden';
+                    }, 500);
 
                             // Typing-Indikator anzeigen
-                            setTimeout(() => {
-                                showTypingText();
+                    setTimeout(() => {
+                        showTypingText();
 
-                                setTimeout(() => {
-                                    hideTypingText();
+                        setTimeout(() => {
+                            hideTypingText();
 
                                     // Bestätigungsnachricht anzeigen
                                     if (response.message) {
@@ -3996,18 +4094,18 @@
                                         addBotMessage(`Vielen Dank für Ihre Nachricht! Unser Team wird sich schnellstmöglich bei Ihnen unter <span style="color: #B7483E;">${email}</span> melden.`);
                                     }
 
-                                    // Final Feedback nach Kontakt-Nachricht anzeigen
+                            // Final Feedback nach Kontakt-Nachricht anzeigen
                                     setTimeout(() => {
-                                        showFinalFeedback();
+                            showFinalFeedback();
                                     }, 1000);
 
-                                    // "Kontaktformular öffnen" Button verstecken
-                                    const contactHandoverBtn = document.querySelector('.contact-handover-btn');
-                                    if (contactHandoverBtn) {
-                                        contactHandoverBtn.classList.add('hide');
-                                    }
-                                }, 1500);
-                            }, 500);
+                            // "Kontaktformular öffnen" Button verstecken
+                            const contactHandoverBtn = document.querySelector('.contact-handover-btn');
+                            if (contactHandoverBtn) {
+                                contactHandoverBtn.classList.add('hide');
+                            }
+                        }, 1500);
+                    }, 500);
                         }, 1000);
 
                     } catch (error) {
