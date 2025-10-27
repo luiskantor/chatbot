@@ -1779,13 +1779,12 @@
                 z-index: 1000 !important;
                 /* Geschlossener Zustand */
                 transform: translateY(100%) !important;
-                opacity: 0 !important;
+                opacity: 1 !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
-                /* Einfache ease Transition */
-                transition: transform 0.3s ease !important,
-                           opacity 0.3s ease !important,
-                           visibility 0s 0.3s !important;
+                /* Clean simple slide-in - nur transform animieren */
+                transition: transform 0.25s ease-out !important,
+                           visibility 0s 0.25s !important;
             }
 
             .contact-form-container.open {
@@ -1793,8 +1792,8 @@
                 opacity: 1 !important;
                 pointer-events: all !important;
                 visibility: visible !important;
-                transition: transform 0.3s ease !important,
-                           opacity 0.3s ease !important,
+                /* Clean simple slide-in - nur transform animieren */
+                transition: transform 0.25s ease-out !important,
                            visibility 0s 0s !important;
             }
 
