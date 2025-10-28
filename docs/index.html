@@ -3559,6 +3559,20 @@
                     addBotMessage(response.message);
                 }
 
+                // NEU: Action Handler für Contact Forms
+                if (response.actions && response.actions.length > 0) {
+                    const action = response.actions[0];
+                    console.log('Processing action:', action);
+                    
+                    if (action.type === 'contact_form' && action.form) {
+                        console.log('Displaying contact form:', action.form);
+                        setTimeout(() => {
+                            displayContactForm(action.form);
+                        }, 500);
+                        return; // Wichtig: Verhindert weitere Message-Verarbeitung
+                    }
+                }
+
                 // Quick Replies anzeigen (falls vorhanden)
                 if (response.quick_replies && response.quick_replies.length > 0) {
                     addQuickReplies(response.quick_replies);
@@ -3575,6 +3589,151 @@
                 showErrorMessage(error.message);
                 
                 console.error('Fehler beim Senden der Nachricht:', error);
+            }
+        }
+
+        /**
+         * Zeigt ein dynamisches Kontaktformular basierend auf der Backend-Konfiguration an
+         * @param {Object} formConfig - Formular-Konfiguration mit fields, submit_label, submit_message
+         */
+        function displayContactForm(formConfig) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Form Container erstellen
+            const formContainer = document.createElement('div');
+            formContainer.className = 'contact-form-container';
+            formContainer.style.cssText = 'margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; max-width: 400px;';
+            
+            const form = document.createElement('form');
+            form.id = 'contactForm';
+            
+            // Dynamisch Felder erstellen basierend auf formConfig.fields
+            formConfig.fields.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.style.cssText = 'margin-bottom: 12px;';
+                
+                const label = document.createElement('label');
+                label.textContent = field.label;
+                label.style.cssText = 'display: block; margin-bottom: 5px; font-weight: 500; color: #333;';
+                
+                const input = document.createElement('input');
+                input.type = field.type;
+                input.id = field.id;
+                input.name = field.id;
+                input.placeholder = field.placeholder;
+                input.required = field.required;
+                input.style.cssText = 'width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;';
+                
+                if (field.minLength) {
+                    input.minLength = field.minLength;
+                }
+                
+                fieldDiv.appendChild(label);
+                fieldDiv.appendChild(input);
+                form.appendChild(fieldDiv);
+            });
+            
+            // Submit Button
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.textContent = formConfig.submit_label || 'Absenden';
+            submitBtn.style.cssText = 'width: 100%; padding: 12px; background: #667ab3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px; margin-top: 10px; transition: background 0.2s;';
+            
+            submitBtn.onmouseover = () => submitBtn.style.background = '#5568a3';
+            submitBtn.onmouseout = () => submitBtn.style.background = '#667ab3';
+            
+            form.appendChild(submitBtn);
+            
+            // Form Submit Handler
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                
+                // Sammle Form-Daten
+                const formData = {};
+                formConfig.fields.forEach(field => {
+                    formData[field.id] = document.getElementById(field.id).value;
+                });
+                
+                console.log('Form submitted:', formData);
+                
+                // Entferne Formular
+                formContainer.remove();
+                
+                // Zeige User-Input im Chat
+                const userMessage = formConfig.fields
+                    .map(field => `${field.label}: ${formData[field.id]}`)
+                    .join('\n');
+                addUserMessage(userMessage);
+                
+                // Sende Buchungsdaten an Backend
+                sendBookingData(formData);
+            };
+            
+            formContainer.appendChild(form);
+            chatMessages.appendChild(formContainer);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        /**
+         * Sendet die ausgefüllten Kontaktdaten an das Backend
+         * @param {Object} formData - Die gesammelten Formulardaten
+         */
+        async function sendBookingData(formData) {
+            const sessionId = getOrCreateSessionId();
+            
+            // Typing-Indikator anzeigen
+            showTypingText();
+            
+            try {
+                const response = await fetch('https://workflow.kantorlab.de/webhook/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: '__BOOKING_SUBMIT__',
+                        session_id: sessionId,
+                        booking_data: formData
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                console.log('Booking response:', data);
+                
+                // Typing-Indikator ausblenden
+                hideTypingText();
+                
+                // Zeige Bot-Antwort
+                if (data.message) {
+                    addBotMessage(data.message);
+                }
+                
+                // Handle weitere Actions falls vorhanden
+                if (data.actions && data.actions.length > 0) {
+                    const action = data.actions[0];
+                    console.log('Additional actions after booking:', action);
+                    
+                    // Hier könnten weitere Actions verarbeitet werden
+                    if (action.type === 'contact_form' && action.form) {
+                        setTimeout(() => {
+                            displayContactForm(action.form);
+                        }, 500);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Booking error:', error);
+                
+                // Typing-Indikator ausblenden
+                hideTypingText();
+                
+                // Zeige Fehlermeldung
+                addBotMessage('Es gab einen Fehler beim Buchen. Bitte versuche es erneut.');
             }
         }
 
