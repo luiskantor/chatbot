@@ -3599,42 +3599,58 @@
         
         /**
          * Zeigt ein dynamisches Kontaktformular für Terminbuchungen an
+         * Nutzt das gleiche Design wie normale Bot-Messages
          * @param {Object} formConfig - Formular-Konfiguration mit fields, submit_label, submit_message
          */
         function displayBookingContactForm(formConfig) {
             console.log('=== displayBookingContactForm called ===');
             
             const chatMessages = document.getElementById('chatMessages');
+            const now = Date.now();
             
             if (!chatMessages) {
                 console.error('❌ chatMessages element not found!');
                 return;
             }
             
-            // Form Container mit eindeutiger Klasse erstellen
-            const formContainer = document.createElement('div');
-            formContainer.className = 'booking-contact-form-container'; // ← EINDEUTIGER NAME
-            formContainer.style.cssText = 'margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; max-width: 400px;';
+            // Prüfe ob Nachricht gruppiert werden soll (innerhalb 10 Sekunden)
+            const shouldGroup = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
             
+            if (shouldGroup) {
+                markPreviousBotAsGrouped();
+            }
+            
+            lastBotMessageTime = now;
+            
+            // Erstelle Bot-Message Container mit EXAKT dem gleichen Design
+            const botMessage = document.createElement('div');
+            botMessage.className = shouldGroup ? 'message bot grouped' : 'message bot';
+            
+            // Erstelle das Formular mit den gleichen Styles wie message-content
             const form = document.createElement('form');
-            form.id = 'bookingContactForm'; // ← EINDEUTIGE ID
+            form.id = 'bookingContactForm';
+            form.style.cssText = 'margin: 0; padding: 0;';
             
-            // Dynamisch Felder erstellen basierend auf formConfig.fields
-            formConfig.fields.forEach(field => {
+            // Dynamisch Felder erstellen
+            formConfig.fields.forEach((field, index) => {
                 const fieldDiv = document.createElement('div');
-                fieldDiv.style.cssText = 'margin-bottom: 12px;';
+                fieldDiv.style.cssText = `margin-bottom: ${index === formConfig.fields.length - 1 ? '0' : '12px'};`;
                 
                 const label = document.createElement('label');
                 label.textContent = field.label;
-                label.style.cssText = 'display: block; margin-bottom: 5px; font-weight: 500; color: #333;';
+                label.style.cssText = 'display: block; margin-bottom: 6px; font-weight: 500; color: #374151; font-size: 13px;';
                 
                 const input = document.createElement('input');
                 input.type = field.type;
-                input.id = `booking_${field.id}`; // ← PREFIX für eindeutige IDs
+                input.id = `booking_${field.id}`;
                 input.name = field.id;
                 input.placeholder = field.placeholder;
                 input.required = field.required;
-                input.style.cssText = 'width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;';
+                input.style.cssText = 'width: 100%; padding: 10px 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit; color: #374151; background: white; transition: border-color 0.2s ease;';
+                
+                // Focus-Effekt
+                input.onfocus = () => input.style.borderColor = '#667ab3';
+                input.onblur = () => input.style.borderColor = '#e5e7eb';
                 
                 if (field.minLength) {
                     input.minLength = field.minLength;
@@ -3649,10 +3665,18 @@
             const submitBtn = document.createElement('button');
             submitBtn.type = 'submit';
             submitBtn.textContent = formConfig.submit_label || 'Absenden';
-            submitBtn.style.cssText = 'width: 100%; padding: 12px; background: #667ab3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px; margin-top: 10px; transition: background 0.2s;';
+            submitBtn.style.cssText = 'width: 100%; padding: 11px 16px; background: #667ab3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 14px; margin-top: 14px; transition: all 0.2s ease; font-family: inherit;';
             
-            submitBtn.onmouseover = () => submitBtn.style.background = '#5568a3';
-            submitBtn.onmouseout = () => submitBtn.style.background = '#667ab3';
+            submitBtn.onmouseover = () => {
+                submitBtn.style.background = '#5568a3';
+                submitBtn.style.transform = 'translateY(-1px)';
+                submitBtn.style.boxShadow = '0 4px 12px rgba(102, 122, 179, 0.3)';
+            };
+            submitBtn.onmouseout = () => {
+                submitBtn.style.background = '#667ab3';
+                submitBtn.style.transform = 'translateY(0)';
+                submitBtn.style.boxShadow = 'none';
+            };
             
             form.appendChild(submitBtn);
             
@@ -3668,8 +3692,8 @@
                 
                 console.log('Booking form submitted:', formData);
                 
-                // Entferne Formular
-                formContainer.remove();
+                // Entferne Bot-Message mit Formular
+                botMessage.remove();
                 
                 // Zeige User-Input im Chat
                 const userMessage = formConfig.fields
@@ -3681,8 +3705,77 @@
                 sendBookingData(formData);
             };
             
-            formContainer.appendChild(form);
-            chatMessages.appendChild(formContainer);
+            // Timestamp erstellen (wie bei normalen Bot-Messages)
+            const timestampHTML = `
+                <div class="message-timestamp">
+                    <span>${getCurrentTime()}</span>
+                </div>
+            `;
+            
+            // Bot-Message zusammenbauen mit EXAKT der gleichen Struktur
+            botMessage.innerHTML = `
+                <div class="message-avatar">
+                    ${getBotAvatarHTML()}
+                </div>
+                <div>
+                    <div class="message-content">
+                        ${form.outerHTML}
+                    </div>
+                    ${timestampHTML}
+                </div>
+            `;
+            
+            // Event-Listener nach dem Einfügen erneut anhängen
+            chatMessages.appendChild(botMessage);
+            
+            // Form neu referenzieren und Event-Listener anhängen
+            const insertedForm = botMessage.querySelector('#bookingContactForm');
+            if (insertedForm) {
+                insertedForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    
+                    const formData = {};
+                    formConfig.fields.forEach(field => {
+                        formData[field.id] = document.getElementById(`booking_${field.id}`).value;
+                    });
+                    
+                    console.log('Booking form submitted:', formData);
+                    botMessage.remove();
+                    
+                    const userMessage = formConfig.fields
+                        .map(field => `${field.label}: ${formData[field.id]}`)
+                        .join('\n');
+                    addUserMessage(userMessage);
+                    
+                    sendBookingData(formData);
+                };
+                
+                // Input Focus/Blur Events neu anhängen
+                formConfig.fields.forEach(field => {
+                    const input = document.getElementById(`booking_${field.id}`);
+                    if (input) {
+                        input.onfocus = () => input.style.borderColor = '#667ab3';
+                        input.onblur = () => input.style.borderColor = '#e5e7eb';
+                    }
+                });
+                
+                // Button Hover Events neu anhängen
+                const btn = insertedForm.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.onmouseover = () => {
+                        btn.style.background = '#5568a3';
+                        btn.style.transform = 'translateY(-1px)';
+                        btn.style.boxShadow = '0 4px 12px rgba(102, 122, 179, 0.3)';
+                    };
+                    btn.onmouseout = () => {
+                        btn.style.background = '#667ab3';
+                        btn.style.transform = 'translateY(0)';
+                        btn.style.boxShadow = 'none';
+                    };
+                }
+            }
+            
+            lastBotMessageElement = botMessage;
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
