@@ -3564,10 +3564,11 @@
                     const action = response.actions[0];
                     console.log('Processing action:', action);
                     
+                    // BOOKING Contact Form (für Terminbuchung)
                     if (action.type === 'contact_form' && action.form) {
-                        console.log('Displaying contact form:', action.form);
+                        console.log('Displaying booking contact form:', action.form);
                         setTimeout(() => {
-                            displayContactForm(action.form);
+                            displayBookingContactForm(action.form); // ← BOOKING-spezifische Funktion
                         }, 500);
                         return; // Wichtig: Verhindert weitere Message-Verarbeitung
                     }
@@ -3592,20 +3593,31 @@
             }
         }
 
+        // ============================================
+        // BOOKING CONTACT FORM (für Terminbuchung)
+        // ============================================
+        
         /**
-         * Zeigt ein dynamisches Kontaktformular basierend auf der Backend-Konfiguration an
+         * Zeigt ein dynamisches Kontaktformular für Terminbuchungen an
          * @param {Object} formConfig - Formular-Konfiguration mit fields, submit_label, submit_message
          */
-        function displayContactForm(formConfig) {
+        function displayBookingContactForm(formConfig) {
+            console.log('=== displayBookingContactForm called ===');
+            
             const chatMessages = document.getElementById('chatMessages');
             
-            // Form Container erstellen
+            if (!chatMessages) {
+                console.error('❌ chatMessages element not found!');
+                return;
+            }
+            
+            // Form Container mit eindeutiger Klasse erstellen
             const formContainer = document.createElement('div');
-            formContainer.className = 'contact-form-container';
+            formContainer.className = 'booking-contact-form-container'; // ← EINDEUTIGER NAME
             formContainer.style.cssText = 'margin: 10px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; max-width: 400px;';
             
             const form = document.createElement('form');
-            form.id = 'contactForm';
+            form.id = 'bookingContactForm'; // ← EINDEUTIGE ID
             
             // Dynamisch Felder erstellen basierend auf formConfig.fields
             formConfig.fields.forEach(field => {
@@ -3618,7 +3630,7 @@
                 
                 const input = document.createElement('input');
                 input.type = field.type;
-                input.id = field.id;
+                input.id = `booking_${field.id}`; // ← PREFIX für eindeutige IDs
                 input.name = field.id;
                 input.placeholder = field.placeholder;
                 input.required = field.required;
@@ -3651,10 +3663,10 @@
                 // Sammle Form-Daten
                 const formData = {};
                 formConfig.fields.forEach(field => {
-                    formData[field.id] = document.getElementById(field.id).value;
+                    formData[field.id] = document.getElementById(`booking_${field.id}`).value;
                 });
                 
-                console.log('Form submitted:', formData);
+                console.log('Booking form submitted:', formData);
                 
                 // Entferne Formular
                 formContainer.remove();
@@ -3674,12 +3686,18 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        // ============================================
+        // BOOKING DATA SUBMISSION
+        // ============================================
+        
         /**
          * Sendet die ausgefüllten Kontaktdaten an das Backend
          * @param {Object} formData - Die gesammelten Formulardaten
          */
         async function sendBookingData(formData) {
-            const sessionId = getOrCreateSessionId();
+            const sessionId = localStorage.getItem('session_id');
+            
+            console.log('Sending booking data:', formData);
             
             // Typing-Indikator anzeigen
             showTypingText();
@@ -3721,7 +3739,7 @@
                     // Hier könnten weitere Actions verarbeitet werden
                     if (action.type === 'contact_form' && action.form) {
                         setTimeout(() => {
-                            displayContactForm(action.form);
+                            displayBookingContactForm(action.form);
                         }, 500);
                     }
                 }
