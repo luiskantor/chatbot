@@ -3676,18 +3676,20 @@
                 
                 // Store original events for later re-attachment
                 const focusHandler = () => {
-                    input.style.borderColor = '#B7483E';
-                    input.style.boxShadow = '0 0 0 3px rgba(183, 72, 62, 0.1)';
+                    input.style.borderColor = 'rgba(183, 72, 62, 0.4)';
+                    input.style.boxShadow = '0 0 0 3px rgba(183, 72, 62, 0.08)';
                     input.style.outline = 'none';
+                    input.style.background = 'rgba(183, 72, 62, 0.02)';
                 };
                 
                 const blurHandler = () => {
                     input.style.borderColor = '#e0e0e0';
                     input.style.boxShadow = 'none';
+                    input.style.background = 'white';
                 };
                 
                 const inputHandler = () => {
-                    input.style.borderColor = '#e0e0e0';
+                    input.style.borderColor = 'rgba(183, 72, 62, 0.4)';
                     errorDiv.style.display = 'none';
                 };
                 
@@ -3703,17 +3705,42 @@
                 form.appendChild(input);
             });
             
-            // Datenschutzerklärung
-            const privacyText = document.createElement('div');
-            privacyText.id = 'privacyText';
-            privacyText.style.cssText = `
-                font-size: 11px;
-                color: #999;
+            // Datenschutzerklärung mit Checkbox
+            const privacyContainer = document.createElement('div');
+            privacyContainer.id = 'privacyContainer';
+            privacyContainer.style.cssText = `
+                display: flex;
+                align-items: flex-start;
+                gap: 8px;
                 margin-top: 4px;
-                line-height: 1.4;
             `;
-            privacyText.innerHTML = `Mit dem Senden akzeptieren Sie unsere <a href="/datenschutz" target="_blank" style="color: #B7483E; text-decoration: none;">Datenschutzerklärung</a>`;
-            form.appendChild(privacyText);
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'privacyCheckbox';
+            checkbox.required = true;
+            checkbox.style.cssText = `
+                margin-top: 2px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+                accent-color: #B7483E;
+            `;
+            
+            const privacyLabel = document.createElement('label');
+            privacyLabel.htmlFor = 'privacyCheckbox';
+            privacyLabel.style.cssText = `
+                font-size: 12px;
+                color: #666;
+                line-height: 1.4;
+                cursor: pointer;
+                user-select: none;
+            `;
+            privacyLabel.innerHTML = `Ich akzeptiere die <a href="/datenschutz" target="_blank" style="color: #B7483E; text-decoration: none;">Datenschutzerklärung</a>`;
+            
+            privacyContainer.appendChild(checkbox);
+            privacyContainer.appendChild(privacyLabel);
+            form.appendChild(privacyContainer);
             
             // Submit Button
             const submitBtn = document.createElement('button');
@@ -3734,27 +3761,42 @@
                 transition: all 0.3s ease;
                 opacity: 1;
                 transform: translateY(0);
+                box-shadow: 0 2px 8px rgba(183, 72, 62, 0.15);
             `;
             
             // Button Hover Events
             const btnMouseEnter = () => {
                 submitBtn.style.background = '#a03d33';
-                submitBtn.style.transform = 'translateY(-1px)';
-                submitBtn.style.boxShadow = '0 4px 12px rgba(183, 72, 62, 0.3)';
+                submitBtn.style.transform = 'translateY(-2px)';
+                submitBtn.style.boxShadow = '0 6px 20px rgba(183, 72, 62, 0.35)';
             };
             
             const btnMouseLeave = () => {
                 submitBtn.style.background = '#B7483E';
                 submitBtn.style.transform = 'translateY(0)';
-                submitBtn.style.boxShadow = 'none';
+                submitBtn.style.boxShadow = '0 2px 8px rgba(183, 72, 62, 0.15)';
+            };
+            
+            const btnMouseDown = () => {
+                submitBtn.style.transform = 'translateY(0) scale(0.98)';
+                submitBtn.style.boxShadow = '0 1px 4px rgba(183, 72, 62, 0.2)';
+            };
+            
+            const btnMouseUp = () => {
+                submitBtn.style.transform = 'translateY(-2px)';
+                submitBtn.style.boxShadow = '0 6px 20px rgba(183, 72, 62, 0.35)';
             };
             
             submitBtn.addEventListener('mouseenter', btnMouseEnter);
             submitBtn.addEventListener('mouseleave', btnMouseLeave);
+            submitBtn.addEventListener('mousedown', btnMouseDown);
+            submitBtn.addEventListener('mouseup', btnMouseUp);
             
             // Store handlers
             submitBtn._mouseEnter = btnMouseEnter;
             submitBtn._mouseLeave = btnMouseLeave;
+            submitBtn._mouseDown = btnMouseDown;
+            submitBtn._mouseUp = btnMouseUp;
             
             form.appendChild(submitBtn);
             
@@ -3766,6 +3808,16 @@
                 const formData = {};
                 let hasError = false;
                 let errorMessage = '';
+                
+                // Check privacy checkbox
+                const privacyCheckbox = document.getElementById('privacyCheckbox');
+                if (!privacyCheckbox.checked) {
+                    hasError = true;
+                    errorMessage = 'Bitte akzeptiere die Datenschutzerklärung.';
+                    errorDiv.textContent = errorMessage;
+                    errorDiv.style.display = 'block';
+                    return;
+                }
                 
                 formConfig.fields.forEach(field => {
                     const input = document.getElementById(`booking_${field.id}`);
@@ -3807,32 +3859,49 @@
                 
                 console.log('Form submitted:', formData);
                 
-                // Disable all inputs (make readonly)
+                // Disable all inputs (make readonly) - STÄRKER AUSGRAUEN
                 formConfig.fields.forEach(field => {
                     const input = document.getElementById(`booking_${field.id}`);
                     input.readOnly = true;
-                    input.style.background = '#f9f9f9';
-                    input.style.cursor = 'default';
-                    input.style.borderColor = '#e0e0e0';
+                    input.style.background = '#f3f3f3';
+                    input.style.cursor = 'not-allowed';
+                    input.style.borderColor = '#d0d0d0';
+                    input.style.color = '#888';
+                    input.style.opacity = '0.7';
                 });
                 
-                // Hide privacy text
-                privacyText.style.display = 'none';
+                // Disable checkbox
+                privacyCheckbox.disabled = true;
+                privacyCheckbox.style.cursor = 'not-allowed';
+                privacyCheckbox.style.opacity = '0.5';
                 
-                // Smooth remove button with animation
+                // Hide privacy container with fade
+                privacyContainer.style.transition = 'opacity 0.3s ease';
+                privacyContainer.style.opacity = '0';
+                setTimeout(() => {
+                    privacyContainer.style.display = 'none';
+                }, 300);
+                
+                // Smooth remove button with VERBESSERTER animation
+                submitBtn.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
                 submitBtn.style.opacity = '0';
-                submitBtn.style.transform = 'translateY(-10px)';
-                submitBtn.style.maxHeight = submitBtn.offsetHeight + 'px';
+                submitBtn.style.transform = 'translateY(-15px) scale(0.9)';
                 
                 setTimeout(() => {
-                    submitBtn.style.maxHeight = '0';
-                    submitBtn.style.marginTop = '0';
-                    submitBtn.style.padding = '0';
+                    submitBtn.style.maxHeight = submitBtn.offsetHeight + 'px';
+                    submitBtn.style.overflow = 'hidden';
                     
                     setTimeout(() => {
-                        submitBtn.remove();
-                    }, 300);
-                }, 300);
+                        submitBtn.style.maxHeight = '0';
+                        submitBtn.style.marginTop = '0';
+                        submitBtn.style.paddingTop = '0';
+                        submitBtn.style.paddingBottom = '0';
+                        
+                        setTimeout(() => {
+                            submitBtn.remove();
+                        }, 400);
+                    }, 50);
+                }, 400);
                 
                 // WICHTIG: Keine addUserMessage() aufrufen!
                 // Das Formular bleibt sichtbar mit den ausgefüllten Daten
@@ -3888,6 +3957,8 @@
                 if (btn && btn._mouseEnter) {
                     btn.addEventListener('mouseenter', btn._mouseEnter);
                     btn.addEventListener('mouseleave', btn._mouseLeave);
+                    btn.addEventListener('mousedown', btn._mouseDown);
+                    btn.addEventListener('mouseup', btn._mouseUp);
                 }
             }
             
