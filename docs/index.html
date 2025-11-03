@@ -3214,8 +3214,10 @@
                             }, 1500);
                         }, 500);
                     }
-                } else if (terminPickerShown) {
-                    // Wenn Termin-Picker bereits gezeigt wurde, prüfe auf Custom-Date
+                }
+
+                // Prüfe auf Custom-Date (unabhängig von "termin" Keyword)
+                if (terminPickerShown && !message.toLowerCase().includes('termin')) {
                     const customDatePattern = /(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag).*?(\d{1,2}[:.]?\d{0,2}|morgens?|mittags?|nachmittags?|abends?)/i;
                     if (customDatePattern.test(message)) {
                         // Custom Date erkannt - zeige Buchungsformular
