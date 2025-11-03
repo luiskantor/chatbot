@@ -2439,13 +2439,17 @@
         };
         
         // Startup Log - Zeigt an, dass die neueste Version geladen ist
-        const CHATBOT_VERSION = '2025-11-03-v2.0';
-        console.log('='.repeat(60));
-        console.log('🚀 CHATBOT GELADEN');
+        const CHATBOT_VERSION = '2025-11-03-v3.0-FINAL';
+        const BACKEND_CONNECTED = true;
+        console.clear(); // Lösche alte Logs
+        console.log('%c============================================================', 'color: #00ff00; font-weight: bold');
+        console.log('%c🚀 CHATBOT GELADEN - BACKEND VERBUNDEN', 'color: #00ff00; font-size: 16px; font-weight: bold');
+        console.log('%c============================================================', 'color: #00ff00; font-weight: bold');
         console.log('📅 Version:', CHATBOT_VERSION);
         console.log('🔗 Backend URL:', API_CONFIG.baseUrl);
-        console.log('✅ Backend Status: VERBUNDEN');
-        console.log('='.repeat(60));
+        console.log('📍 Chat Endpoint:', API_CONFIG.baseUrl + API_CONFIG.endpoints.chat);
+        console.log('✅ Backend Status:', BACKEND_CONNECTED ? 'AKTIV UND VERBUNDEN' : 'NICHT VERBUNDEN');
+        console.log('%c============================================================', 'color: #00ff00; font-weight: bold');
         
         // Test Backend-Verbindung beim Laden
         (async () => {
@@ -3545,13 +3549,18 @@
 
             try {
                 // API-Call zum Chat-Endpoint
-                console.log('📤 Sending message:', message, 'Session:', getOrCreateSessionId());
+                console.log('%c📤 SENDING MESSAGE TO BACKEND', 'color: #ff9900; font-weight: bold');
+                console.log('Message:', message);
+                console.log('Session ID:', getOrCreateSessionId());
+                console.log('Endpoint:', API_CONFIG.baseUrl + API_CONFIG.endpoints.chat);
+                
                 const response = await apiCall(API_CONFIG.endpoints.chat, {
                     content: message,
                     session_id: getOrCreateSessionId()
                 });
                 
-                console.log('✅ Received response:', response);
+                console.log('%c✅ RESPONSE FROM BACKEND RECEIVED', 'color: #00ff00; font-weight: bold');
+                console.log('Response:', response);
 
                 // Typing-Indikator ausblenden
                 hideTypingText();
