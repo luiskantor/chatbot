@@ -2425,7 +2425,7 @@
         // ====================================
 
         const API_CONFIG = {
-            baseUrl: 'https://workflow.kantorlab.de', // ← WICHTIG: Hier später die echte n8n-Domain eintragen!
+            baseUrl: 'https://workflow.kantorlab.de',
             endpoints: {
                 chat: '/webhook/chat',
                 booking: '/webhook/booking-ops',
@@ -2437,6 +2437,10 @@
                 'Content-Type': 'application/json'
             }
         };
+        
+        // Startup Log - Zeigt an, dass die neueste Version geladen ist
+        console.log('🚀 Chatbot geladen - Version: 2025-11-03 (Backend verbunden)');
+        console.log('🔗 Backend URL:', API_CONFIG.baseUrl);
 
         // Session Management - UUID v4 Generator
         function generateUUID() {
