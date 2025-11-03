@@ -2965,14 +2965,6 @@
             if (isValid) {
                 console.log('Buchung:', { appointment, name, email });
 
-                // Formatierte Buchungsnachricht ans Backend senden
-                // Format: "Termin buchen: [Datum] - Name: [Name], Email: [Email]"
-                const bookingMessage = `Termin buchen: ${appointment} - Name: ${name}, Email: ${email}`;
-                const messageInput = document.getElementById('messageInput');
-                messageInput.value = bookingMessage;
-                sendMessage(); // Sendet alle Daten ans Backend
-                messageInput.value = '';
-
                 // Inputs deaktivieren
                 nameInput.disabled = true;
                 emailInput.disabled = true;
