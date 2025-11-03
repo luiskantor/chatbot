@@ -704,6 +704,7 @@
         .booking-input:focus {
             outline: none;
             border-color: #B7483E;
+            background: #ffffff;
             box-shadow: 0 4px 32px rgba(183, 72, 62, 0.15),
                         0 0 0 3px rgba(183, 72, 62, 0.1);
         }
@@ -720,7 +721,7 @@
 
         .privacy-checkbox-wrapper {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
             font-size: 12px;
             color: #6b7280;
@@ -731,6 +732,7 @@
         .privacy-checkbox {
             width: 18px;
             height: 18px;
+            margin-top: 2px;
             cursor: pointer;
             flex-shrink: 0;
             accent-color: #B7483E;
@@ -770,11 +772,10 @@
 
         .booking-submit:hover {
             background: #9d3a32;
-            transform: translateY(-1px);
         }
 
         .booking-submit:active {
-            transform: translateY(0);
+            background: #8a332d;
         }
 
         .booking-submit:disabled {
@@ -784,7 +785,12 @@
         }
 
         .booking-submit.hide {
-            display: none !important;
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .booking-form.submitted {
@@ -1971,7 +1977,12 @@
             }
 
             .booking-submit.hide {
-                display: none !important;
+                opacity: 0 !important;
+                max-height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important;
+                transition: all 0.3s ease !important;
             }
 
             /* Contact Button */
