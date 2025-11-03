@@ -2439,8 +2439,34 @@
         };
         
         // Startup Log - Zeigt an, dass die neueste Version geladen ist
-        console.log('🚀 Chatbot geladen - Version: 2025-11-03 (Backend verbunden)');
+        const CHATBOT_VERSION = '2025-11-03-v2.0';
+        console.log('='.repeat(60));
+        console.log('🚀 CHATBOT GELADEN');
+        console.log('📅 Version:', CHATBOT_VERSION);
         console.log('🔗 Backend URL:', API_CONFIG.baseUrl);
+        console.log('✅ Backend Status: VERBUNDEN');
+        console.log('='.repeat(60));
+        
+        // Test Backend-Verbindung beim Laden
+        (async () => {
+            try {
+                const testUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.chat}`;
+                console.log('🔍 Testing Backend Connection:', testUrl);
+                const response = await fetch(testUrl, {
+                    method: 'POST',
+                    headers: API_CONFIG.headers,
+                    body: JSON.stringify({ test: true })
+                });
+                console.log('✅ Backend Response Status:', response.status);
+                if (response.ok) {
+                    console.log('✅ Backend ist ERREICHBAR!');
+                } else {
+                    console.warn('⚠️ Backend antwortete mit Status:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Backend NICHT erreichbar:', error.message);
+            }
+        })();
 
         // Session Management - UUID v4 Generator
         function generateUUID() {
