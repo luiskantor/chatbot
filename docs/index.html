@@ -3816,34 +3816,43 @@
                 });
                 
                 // Disable checkbox
-                privacyCheckbox.disabled = true;
-                privacyCheckbox.style.cursor = 'not-allowed';
-                privacyCheckbox.style.opacity = '0.5';
+                const privacyCheckboxEl = document.getElementById('privacyCheckbox');
+                if (privacyCheckboxEl) {
+                    privacyCheckboxEl.disabled = true;
+                    privacyCheckboxEl.style.cursor = 'not-allowed';
+                    privacyCheckboxEl.style.opacity = '0.5';
+                }
                 
                 // Hide privacy container with fade
-                privacyContainer.style.transition = 'opacity 0.3s ease';
-                privacyContainer.style.opacity = '0';
-                setTimeout(() => {
-                    privacyContainer.style.display = 'none';
-                }, 300);
+                const privacyContainerEl = document.getElementById('privacyContainer');
+                if (privacyContainerEl) {
+                    privacyContainerEl.style.transition = 'opacity 0.3s ease';
+                    privacyContainerEl.style.opacity = '0';
+                    setTimeout(() => {
+                        privacyContainerEl.style.display = 'none';
+                    }, 300);
+                }
                 
-                // Smooth remove button - Opacity + Height animation
-                const btnHeight = submitBtn.offsetHeight;
-                submitBtn.style.maxHeight = btnHeight + 'px';
-                submitBtn.style.overflow = 'hidden';
-                submitBtn.style.transition = 'opacity 0.3s ease, max-height 0.4s ease 0.3s, margin-top 0.4s ease 0.3s, padding 0.4s ease 0.3s';
-                submitBtn.style.opacity = '0';
-                
-                setTimeout(() => {
-                    submitBtn.style.maxHeight = '0';
-                    submitBtn.style.marginTop = '0';
-                    submitBtn.style.paddingTop = '0';
-                    submitBtn.style.paddingBottom = '0';
+                // Smooth remove button - Hole Button aus DOM
+                const submitButton = document.querySelector('#bookingContactForm button[type="submit"]');
+                if (submitButton) {
+                    const btnHeight = submitButton.offsetHeight;
+                    submitButton.style.maxHeight = btnHeight + 'px';
+                    submitButton.style.overflow = 'hidden';
+                    submitButton.style.transition = 'opacity 0.3s ease, max-height 0.4s ease 0.3s, margin-top 0.4s ease 0.3s, padding 0.4s ease 0.3s';
+                    submitButton.style.opacity = '0';
                     
                     setTimeout(() => {
-                        submitBtn.remove();
-                    }, 400);
-                }, 300);
+                        submitButton.style.maxHeight = '0';
+                        submitButton.style.marginTop = '0';
+                        submitButton.style.paddingTop = '0';
+                        submitButton.style.paddingBottom = '0';
+                        
+                        setTimeout(() => {
+                            submitButton.remove();
+                        }, 400);
+                    }, 300);
+                }
                 
                 // WICHTIG: Keine addUserMessage() aufrufen!
                 // Das Formular bleibt sichtbar mit den ausgefüllten Daten
