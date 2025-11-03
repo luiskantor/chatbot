@@ -2965,6 +2965,28 @@
             if (isValid) {
                 console.log('Buchung:', { appointment, name, email });
 
+                // User-Nachricht: Buchung abgeschickt (Backend wird antworten)
+                const chatMessages = document.getElementById('chatMessages');
+
+                // User-Nachricht unterbricht Bot-Gruppierung
+                lastBotMessageTime = null;
+                lastBotMessageElement = null;
+
+                const bookingSubmitMessage = document.createElement('div');
+                bookingSubmitMessage.className = 'message user';
+                bookingSubmitMessage.innerHTML = `
+                    <div>
+                        <div class="message-content">
+                            Termin buchen
+                        </div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(bookingSubmitMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
                 // Inputs deaktivieren
                 nameInput.disabled = true;
                 emailInput.disabled = true;
@@ -2977,66 +2999,8 @@
                 submitBtn.classList.add('hide');
                 formContainer.classList.add('submitted');
 
-                // Bestätigungsnachricht anzeigen
-                const chatMessages = document.getElementById('chatMessages');
-
-                setTimeout(() => {
-                    showTypingText();
-
-                    setTimeout(() => {
-                        hideTypingText();
-
-                        const now = Date.now();
-                        const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-                        if (isGrouped) {
-                            markPreviousBotAsGrouped();
-                        }
-                        lastBotMessageTime = now;
-
-                        const confirmMessage = document.createElement('div');
-                        confirmMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
-                        confirmMessage.innerHTML = `
-                            <div class="message-avatar">
-                                <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
-                                        <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                                        <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
-                                              fill="white" stroke="white" stroke-width="0"/>
-                                        <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
-                                        <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
-                                    </g>
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="message-content">
-                                    Vielen Dank! Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungsmail an <span style="color: #B7483E;">${email}</span>.
-                                </div>
-                                <div class="message-timestamp">
-                                    <span>${getCurrentTime()}</span>
-                                    <span class="feedback-separator">·</span>
-                                    <div class="feedback-buttons">
-                                        <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
-                                            </svg>
-                                        </button>
-                                        <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
-                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        chatMessages.appendChild(confirmMessage);
-                        lastBotMessageElement = confirmMessage;
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-                        // Final Feedback nach Termin-Buchung anzeigen
-                        showFinalFeedback();
-                    }, 1500);
-                }, 500);
+                // Backend wird jetzt mit Bestätigung oder Fehler antworten
+                // Keine Mock-Nachricht mehr nötig
             }
         }
 
