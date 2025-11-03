@@ -784,10 +784,7 @@
         }
 
         .booking-submit.hide {
-            opacity: 0;
-            max-height: 0;
-            padding: 0;
-            margin: 0;
+            display: none !important;
         }
 
         .booking-form.submitted {
@@ -1974,12 +1971,7 @@
             }
 
             .booking-submit.hide {
-                opacity: 0 !important;
-                max-height: 0 !important;
-                min-height: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                transition: all 0.3s ease !important;
+                display: none !important;
             }
 
             /* Contact Button */
@@ -2060,11 +2052,15 @@
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 z-index: 1000 !important;
+                /* Gleiche Animation wie Chatbot - Geschlossener Zustand */
                 transform: translateY(30px) scale(0.9) !important;
                 opacity: 0 !important;
                 pointer-events: none !important;
                 visibility: hidden !important;
-                transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s 0.4s !important;
+                /* Gleiche cubic-bezier wie Chatbot */
+                transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important,
+                           transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important,
+                           visibility 0s 0.4s !important;
             }
 
             .contact-form-container.open {
@@ -2076,7 +2072,10 @@
                 opacity: 1 !important;
                 pointer-events: all !important;
                 visibility: visible !important;
-                transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s 0s !important;
+                /* Gleiche cubic-bezier wie Chatbot */
+                transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important,
+                           transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important,
+                           visibility 0s 0s !important;
             }
 
             .contact-form-content {
@@ -2421,212 +2420,10 @@
         const AVATAR_IMAGE = './logo2.jpg'; // <-- Logo-Datei
 
         // ====================================
-        // API-KONFIGURATION & SESSION MANAGEMENT
-        // ====================================
-
-        const API_CONFIG = {
-            baseUrl: 'https://workflow.kantorlab.de',
-            endpoints: {
-                chat: '/webhook/chat',
-                booking: '/webhook/booking-ops',
-                feedback: '/webhook/feedback',
-                handover: '/webhook/handover'
-            },
-            timeout: 12000, // 12 Sekunden
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-        
-        // Startup Log - Zeigt an, dass die neueste Version geladen ist
-        const CHATBOT_VERSION = '2025-11-03-v2.0';
-        console.log('='.repeat(60));
-        console.log('🚀 CHATBOT GELADEN');
-        console.log('📅 Version:', CHATBOT_VERSION);
-        console.log('🔗 Backend URL:', API_CONFIG.baseUrl);
-        console.log('✅ Backend Status: VERBUNDEN');
-        console.log('='.repeat(60));
-        
-        // Test Backend-Verbindung beim Laden
-        (async () => {
-            try {
-                const testUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.chat}`;
-                console.log('🔍 Testing Backend Connection:', testUrl);
-                const response = await fetch(testUrl, {
-                    method: 'POST',
-                    headers: API_CONFIG.headers,
-                    body: JSON.stringify({ test: true })
-                });
-                console.log('✅ Backend Response Status:', response.status);
-                if (response.ok) {
-                    console.log('✅ Backend ist ERREICHBAR!');
-                } else {
-                    console.warn('⚠️ Backend antwortete mit Status:', response.status);
-                }
-            } catch (error) {
-                console.error('❌ Backend NICHT erreichbar:', error.message);
-            }
-        })();
-
-        // Session Management - UUID v4 Generator
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-        // Session-ID aus localStorage holen oder neu erstellen
-        function getOrCreateSessionId() {
-            const storageKey = 'chatbot_session_id';
-            let sessionId = localStorage.getItem(storageKey);
-            
-            if (!sessionId) {
-                sessionId = generateUUID();
-                localStorage.setItem(storageKey, sessionId);
-                console.log('Neue Session-ID erstellt:', sessionId);
-            } else {
-                console.log('Bestehende Session-ID geladen:', sessionId);
-            }
-            
-            return sessionId;
-        }
-
-        // Generische API-Call Funktion mit Error-Handling und Timeout
-        async function apiCall(endpoint, data) {
-            const url = `${API_CONFIG.baseUrl}${endpoint}`;
-            
-            console.log('📡 API-Call:', url, data);
-            
-            try {
-                // Timeout-Promise erstellen
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('Request Timeout')), API_CONFIG.timeout);
-                });
-                
-                // Fetch-Promise erstellen
-                const fetchPromise = fetch(url, {
-                    method: 'POST',
-                    headers: API_CONFIG.headers,
-                    body: JSON.stringify(data)
-                });
-                
-                // Race zwischen Timeout und Fetch
-                const response = await Promise.race([fetchPromise, timeoutPromise]);
-                
-                // Prüfe HTTP-Status
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                // Parse JSON Response
-                const responseData = await response.json();
-                console.log('✅ API-Response:', responseData);
-                
-                return responseData;
-                
-            } catch (error) {
-                console.error('❌ API-Error:', error);
-                
-                // Benutzerfreundliche Fehlermeldungen
-                if (error.message === 'Request Timeout') {
-                    throw new Error('Die Anfrage hat zu lange gedauert. Bitte versuchen Sie es erneut.');
-                } else if (error.message.includes('Failed to fetch')) {
-                    throw new Error('Netzwerkfehler. Bitte prüfen Sie Ihre Internetverbindung.');
-                } else if (error.message.includes('HTTP')) {
-                    throw new Error('Der Server hat einen Fehler zurückgegeben. Bitte versuchen Sie es später erneut.');
-                } else {
-                    throw new Error('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
-                }
-            }
-        }
-
-        // ====================================
-        // DATUMSFORMAT-HELPER (Deutsches Format ↔ ISO)
-        // ====================================
-
-        /**
-         * Konvertiert ISO-Datum zu deutschem Format
-         * @param {string} isoDate - Datum im Format "YYYY-MM-DD"
-         * @returns {string} Datum im Format "DD.MM.YYYY"
-         */
-        function formatDateGerman(isoDate) {
-            if (!isoDate) return '';
-            const [year, month, day] = isoDate.split('-');
-            return `${day}.${month}.${year}`;
-        }
-
-        /**
-         * Konvertiert deutsches Datum zu ISO-Format
-         * @param {string} germanDate - Datum im Format "DD.MM.YYYY"
-         * @returns {string} Datum im Format "YYYY-MM-DD"
-         */
-        function formatDateISO(germanDate) {
-            if (!germanDate) return '';
-            const [day, month, year] = germanDate.split('.');
-            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        }
-
-        /**
-         * Gibt aktuelles Datum im deutschen Format zurück
-         * @returns {string} Aktuelles Datum im Format "DD.MM.YYYY"
-         */
-        function getCurrentDateGerman() {
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            return `${day}.${month}.${year}`;
-        }
-
-        /**
-         * Validiert deutsches Datumsformat
-         * @param {string} germanDate - Datum im Format "DD.MM.YYYY"
-         * @returns {boolean} true wenn gültig, false wenn ungültig
-         */
-        function validateGermanDate(germanDate) {
-            if (!germanDate) return false;
-            
-            const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-            const match = germanDate.match(dateRegex);
-            
-            if (!match) return false;
-            
-            const day = parseInt(match[1], 10);
-            const month = parseInt(match[2], 10);
-            const year = parseInt(match[3], 10);
-            
-            if (month < 1 || month > 12) return false;
-            if (day < 1 || day > 31) return false;
-            
-            const date = new Date(year, month - 1, day);
-            
-            return date.getDate() === day && 
-                   date.getMonth() === month - 1 && 
-                   date.getFullYear() === year;
-        }
-
-        /**
-         * Formatiert deutsches Datum schön lesbar mit ausgeschriebenem Monat
-         * @param {string} germanDate - Datum im Format "DD.MM.YYYY"
-         * @returns {string} Datum im Format "15. Februar 2025"
-         */
-        function formatDateGermanReadable(germanDate) {
-            const months = [
-                'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-                'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-            ];
-            
-            const [day, month, year] = germanDate.split('.').map(Number);
-            return `${day}. ${months[month - 1]} ${year}`;
-        }
-
-        // ====================================
         // FUNKTIONEN
         // ====================================
 
-        // Gibt das Avatar-HTML zurück (entweder Custom-Bild oder Standard-SVG) - NUR FÜR HEADER
+        // Gibt das Avatar-HTML zurück (entweder Custom-Bild oder Standard-SVG)
         function getAvatarHTML() {
             if (AVATAR_IMAGE) {
                 return `<img src="${AVATAR_IMAGE}" alt="Logo" />`;
@@ -2644,21 +2441,6 @@
                     </svg>
                 `;
             }
-        }
-
-        // Gibt den Bot-Avatar zurück (für Chat-Nachrichten)
-        function getBotAvatarHTML() {
-            return `
-                <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
-                        <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
-                        <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
-                              fill="white" stroke="white" stroke-width="0"/>
-                        <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
-                        <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
-                    </g>
-                </svg>
-            `;
         }
 
         // Aktuelles Datum anzeigen (ohne Jahr)
@@ -2719,7 +2501,15 @@
 
                 <div class="message bot">
                     <div class="message-avatar">
-                        ${getBotAvatarHTML()}
+                        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                      fill="white" stroke="white" stroke-width="0"/>
+                                <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                            </g>
+                        </svg>
                     </div>
                     <div>
                         <div class="message-content">
@@ -2773,7 +2563,15 @@
                     quickActionsMsg.className = isGrouped ? 'message bot grouped' : 'message bot';
                     quickActionsMsg.innerHTML = `
                         <div class="message-avatar">
-                            ${getBotAvatarHTML()}
+                            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                    <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                    <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                          fill="white" stroke="white" stroke-width="0"/>
+                                    <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                    <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                </g>
+                            </svg>
                         </div>
                         <div>
                             <div class="message-content">
@@ -2841,266 +2639,6 @@
                 console.error('Textarea nicht gefunden!');
             }
         });
-
-        // ====================================
-        // HELPER-FUNKTIONEN FÜR BOT-NACHRICHTEN
-        // ====================================
-
-        /**
-         * Fügt eine Bot-Nachricht zum Chat hinzu
-         * @param {string} text - Der Nachrichtentext
-         * @param {object} options - Optionale Parameter (hasTimestamp, hasFeedback, etc.)
-         */
-        function addBotMessage(text, options = {}) {
-            const {
-                hasTimestamp = true,
-                hasFeedback = true,
-                isGrouped = false
-            } = options;
-
-            const chatMessages = document.getElementById('chatMessages');
-            const now = Date.now();
-            
-            // Prüfe ob Nachricht gruppiert werden soll (innerhalb 10 Sekunden)
-            const shouldGroup = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-            
-            if (shouldGroup && !isGrouped) {
-                markPreviousBotAsGrouped();
-            }
-            
-            lastBotMessageTime = now;
-
-            const botMessage = document.createElement('div');
-            botMessage.className = shouldGroup ? 'message bot grouped' : 'message bot';
-            
-            let timestampHTML = '';
-            if (hasTimestamp) {
-                let feedbackHTML = '';
-                if (hasFeedback) {
-                    feedbackHTML = `
-                        <span class="feedback-separator">·</span>
-                        <div class="feedback-buttons">
-                            <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
-                                </svg>
-                            </button>
-                            <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    `;
-                }
-                
-                timestampHTML = `
-                    <div class="message-timestamp">
-                        <span>${getCurrentTime()}</span>
-                        ${feedbackHTML}
-                    </div>
-                `;
-            }
-
-            botMessage.innerHTML = `
-                <div class="message-avatar">
-                    ${getBotAvatarHTML()}
-                </div>
-                <div>
-                    <div class="message-content">
-                        ${text}
-                    </div>
-                    ${timestampHTML}
-                </div>
-            `;
-
-            chatMessages.appendChild(botMessage);
-            lastBotMessageElement = botMessage;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        /**
-         * Fügt Quick Reply Buttons zum letzten Bot-Message hinzu
-         * @param {Array} replies - Array von {text, payload} Objekten
-         */
-        function addQuickReplies(replies) {
-            if (!replies || replies.length === 0) return;
-
-            const lastMessage = document.querySelector('.message.bot:last-of-type .message-content');
-            if (!lastMessage) return;
-
-            const quickRepliesContainer = document.createElement('div');
-            quickRepliesContainer.className = 'quick-actions-message';
-
-            replies.forEach(reply => {
-                const button = document.createElement('button');
-                button.className = 'quick-action-chat-btn';
-                button.textContent = reply.text;
-                button.onclick = () => {
-                    const input = document.getElementById('messageInput');
-                    input.value = reply.payload;
-                    sendMessage();
-                };
-                quickRepliesContainer.appendChild(button);
-            });
-
-            lastMessage.appendChild(quickRepliesContainer);
-        }
-
-        /**
-         * Zeigt eine Fehlermeldung als Bot-Nachricht an
-         * @param {string} errorText - Die Fehlermeldung
-         */
-        function showErrorMessage(errorText) {
-            const chatMessages = document.getElementById('chatMessages');
-            const now = Date.now();
-            
-            const shouldGroup = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-            if (shouldGroup) {
-                markPreviousBotAsGrouped();
-            }
-            lastBotMessageTime = now;
-
-            const errorMessage = document.createElement('div');
-            errorMessage.className = shouldGroup ? 'message bot grouped' : 'message bot';
-            errorMessage.innerHTML = `
-                <div class="message-avatar">
-                    ${getBotAvatarHTML()}
-                </div>
-                <div>
-                    <div class="message-content" style="background: #fee2e2; color: #991b1b;">
-                        ⚠️ ${errorText}
-                    </div>
-                    <div class="message-timestamp">
-                        <span>${getCurrentTime()}</span>
-                    </div>
-                </div>
-            `;
-
-            chatMessages.appendChild(errorMessage);
-            lastBotMessageElement = errorMessage;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        /**
-         * Fügt eine User-Nachricht zum Chat hinzu
-         * @param {string} text - Der Nachrichtentext
-         */
-        function addUserMessage(text) {
-            const chatMessages = document.getElementById('chatMessages');
-            
-            // User-Nachricht unterbricht Bot-Gruppierung
-            lastBotMessageTime = null;
-            lastBotMessageElement = null;
-
-            const userMessage = document.createElement('div');
-            userMessage.className = 'message user';
-            userMessage.innerHTML = `
-                <div>
-                    <div class="message-content">
-                        ${text}
-                    </div>
-                    <div class="message-timestamp">
-                        <span>${getCurrentTime()}</span>
-                    </div>
-                </div>
-            `;
-
-            chatMessages.appendChild(userMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // ====================================
-        // SLOT-SELECTION FUNKTIONEN
-        // ====================================
-
-        /**
-         * Zeigt Slot-Buttons für Terminauswahl an
-         * @param {Array} slots - Array von {label, value} Objekten
-         */
-        function displaySlotButtons(slots) {
-            const chatMessages = document.getElementById('chatMessages');
-            
-            // Container für Slot-Buttons (wie Quick-Reply Buttons)
-            const slotContainer = document.createElement('div');
-            slotContainer.className = 'quick-actions-message';
-            slotContainer.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-top: 16px;';
-            
-            // Erstelle Button für jeden Slot
-            slots.forEach(slot => {
-                const button = document.createElement('button');
-                button.className = 'quick-action-chat-btn';
-                button.textContent = slot.label;
-                
-                button.onclick = () => {
-                    selectSlot(slot);
-                };
-                
-                slotContainer.appendChild(button);
-            });
-            
-            // Füge Container zur letzten Bot-Nachricht hinzu
-            const lastBotMessage = chatMessages.querySelector('.message.bot:last-of-type .message-content');
-            if (lastBotMessage) {
-                lastBotMessage.appendChild(slotContainer);
-            } else {
-                chatMessages.appendChild(slotContainer);
-            }
-            
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        /**
-         * Verarbeitet Slot-Auswahl
-         * @param {Object} slot - Slot-Objekt mit label und value
-         */
-        function selectSlot(slot) {
-            // Zeige User-Auswahl im Chat
-            addUserMessage(slot.label);
-            
-            // Sende Slot-Auswahl an Backend
-            sendSlotSelection(slot.value);
-        }
-
-        /**
-         * Sendet ausgewählten Slot an Backend
-         * @param {Object} slotData - Slot-Daten mit datetime und slot_id
-         */
-        async function sendSlotSelection(slotData) {
-            const sessionId = getOrCreateSessionId();
-            
-            // Typing-Indikator anzeigen
-            showTypingText();
-            
-            try {
-                const response = await apiCall(API_CONFIG.endpoints.chat, {
-                    content: '__SLOT_SELECTED__',
-                    session_id: sessionId,
-                    booking_data: {
-                        datetime: slotData.datetime,
-                        slot_id: slotData.slot_id
-                    }
-                });
-                
-                // Typing-Indikator ausblenden
-                hideTypingText();
-                
-                // Verarbeite Response (z.B. Name/Email Form)
-                if (response.action === 'show_booking_form') {
-                    addBotMessage(response.message);
-                    // Hier könnte displayBookingForm() aufgerufen werden
-                } else if (response.message) {
-                    addBotMessage(response.message);
-                }
-                
-            } catch (error) {
-                // Typing-Indikator ausblenden
-                hideTypingText();
-                
-                console.error('Error selecting slot:', error);
-                showErrorMessage('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
-            }
-        }
 
         // Funktionen für Typing Text Indicator über Input-Feld
         function showTypingText() {
@@ -3244,7 +2782,7 @@
             }
         }
 
-        async function handleFeedback(type, button) {
+        function handleFeedback(type, button) {
             console.log('Feedback:', type);
 
             // Finde alle Feedback-Buttons in der gleichen Message
@@ -3264,20 +2802,8 @@
             // Setze den geklickten Button auf aktiv
             button.classList.add('active');
 
-            // API-Call für Feedback
-            try {
-                await apiCall(API_CONFIG.endpoints.feedback, {
-                    session_id: getOrCreateSessionId(),
-                    rating: type === 'up' ? 5 : 1,
-                    type: 'message',
-                    comment: '' // Optional: Kann später erweitert werden
-                });
-
-                console.log('Feedback erfolgreich gesendet');
-            } catch (error) {
-                console.error('Feedback konnte nicht gesendet werden:', error);
-                // Feedback-Fehler sind nicht kritisch, daher keine Nutzer-Benachrichtigung
-            }
+            // Hier kann später die Feedback-Logik implementiert werden
+            // z.B. an Backend senden
         }
 
         // Validierungsfunktionen
@@ -3396,7 +2922,7 @@
             }, 500);
         }
 
-        async function submitBooking(appointment) {
+        function submitBooking(appointment) {
             const name = document.getElementById('bookingName').value;
             const email = document.getElementById('bookingEmail').value;
             const nameInput = document.getElementById('bookingName');
@@ -3437,7 +2963,31 @@
             }
 
             if (isValid) {
-                // Inputs deaktivieren während API-Call
+                console.log('Buchung:', { appointment, name, email });
+
+                // User-Nachricht: Buchung abgeschickt (Backend wird antworten)
+                const chatMessages = document.getElementById('chatMessages');
+
+                // User-Nachricht unterbricht Bot-Gruppierung
+                lastBotMessageTime = null;
+                lastBotMessageElement = null;
+
+                const bookingSubmitMessage = document.createElement('div');
+                bookingSubmitMessage.className = 'message user';
+                bookingSubmitMessage.innerHTML = `
+                    <div>
+                        <div class="message-content">
+                            Termin buchen
+                        </div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(bookingSubmitMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Inputs deaktivieren
                 nameInput.disabled = true;
                 emailInput.disabled = true;
                 privacyCheckbox.disabled = true;
@@ -3449,76 +2999,12 @@
                 submitBtn.classList.add('hide');
                 formContainer.classList.add('submitted');
 
-                // Parse Appointment String: "Montag, 28.10 · 10:00"
-                const parts = appointment.split('·').map(s => s.trim());
-                const datePart = parts[0]; // "Montag, 28.10"
-                const timePart = parts[1]; // "10:00"
-                
-                // Extrahiere Tag und Monat aus "Montag, 28.10"
-                const dateMatch = datePart.match(/(\d{2})\.(\d{2})/);
-                let isoDate = '';
-                
-                if (dateMatch) {
-                    const day = dateMatch[1];
-                    const month = dateMatch[2];
-                    const currentYear = new Date().getFullYear();
-                    const germanDate = `${day}.${month}.${currentYear}`;
-                    isoDate = formatDateISO(germanDate); // Nutzt Helper-Funktion
-                }
-
-                // Typing-Indikator anzeigen
-                    showTypingText();
-
-                try {
-                    // API-Call zur Buchung
-                    const response = await apiCall(API_CONFIG.endpoints.booking, {
-                        action: 'create',
-                        session_id: getOrCreateSessionId(),
-                        booking_data: {
-                            service: 'Beratungsgespräch',
-                            date: isoDate,
-                            time: timePart,
-                            customer_name: name,
-                            customer_email: email
-                        }
-                    });
-
-                    // Typing-Indikator ausblenden
-                        hideTypingText();
-
-                    // Bestätigungsnachricht anzeigen
-                    if (response.message) {
-                        addBotMessage(response.message);
-                    } else {
-                        // Fallback-Nachricht falls Backend keine message zurückgibt
-                        addBotMessage(`Vielen Dank! Ihr Termin wurde erfolgreich gebucht. Sie erhalten eine Bestätigungsmail an <span style="color: #B7483E;">${email}</span>.`);
-                    }
-
-                        // Final Feedback nach Termin-Buchung anzeigen
-                    setTimeout(() => {
-                        showFinalFeedback();
-                    }, 1000);
-
-                } catch (error) {
-                    // Typing-Indikator ausblenden
-                    hideTypingText();
-
-                    // Fehler anzeigen
-                    showErrorMessage('Die Buchung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.');
-                    
-                    // Inputs wieder aktivieren
-                    nameInput.disabled = false;
-                    emailInput.disabled = false;
-                    privacyCheckbox.disabled = false;
-                    submitBtn.classList.remove('hide');
-                    formContainer.classList.remove('submitted');
-
-                    console.error('Fehler bei Buchung:', error);
-                }
+                // Backend wird jetzt mit Bestätigung oder Fehler antworten
+                // Keine Mock-Nachricht mehr nötig
             }
         }
 
-        async function sendMessage() {
+        function sendMessage() {
             // Cooldown-Prüfung: Blockiere wenn Bot tippt
             if (isBotTyping) {
                 console.log('Cooldown aktiv: Bot schreibt noch...');
@@ -3528,495 +3014,274 @@
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
 
-            if (!message) return;
-
+            if (message) {
                 // User hat geschrieben - Flag setzen
                 userHasWritten = true;
 
-            // User-Nachricht hinzufügen
-            addUserMessage(message);
+                // Inaktivitäts-Timer wurde entfernt - nur beim Chat-Schließen relevant
+
+                // User-Nachricht unterbricht Bot-Nachrichten-Gruppierung
+                lastBotMessageTime = null;
+                lastBotMessageElement = null;
+
+                // Nachricht zum Chat hinzufügen
+                const chatMessages = document.getElementById('chatMessages');
+
+                // User-Nachricht erstellen
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.innerHTML = `
+                    <div>
+                        <div class="message-content">
+                            ${message}
+                        </div>
+                        <div class="message-timestamp">
+                            <span>${getCurrentTime()}</span>
+                        </div>
+                    </div>
+                `;
+
+                chatMessages.appendChild(userMessage);
 
                 // Input leeren
                 input.value = '';
                 input.style.height = 'auto';
 
-            // Typing-Indikator anzeigen
-            showTypingText();
+                // Zum Ende scrollen
+                chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            try {
-                // API-Call zum Chat-Endpoint
-                console.log('📤 Sending message:', message, 'Session:', getOrCreateSessionId());
-                const response = await apiCall(API_CONFIG.endpoints.chat, {
-                    content: message,
-                    session_id: getOrCreateSessionId()
-                });
-                
-                console.log('✅ Received response:', response);
+                // Mock: Prüfe auf "termin" und zeige Terminvorschläge (nur beim ersten Mal)
+                if (message.toLowerCase().includes('termin')) {
+                    if (!terminPickerShown) {
+                        // Erster Termin-Request: Zeige Termin-Picker
+                        terminPickerShown = true;
 
-                // Typing-Indikator ausblenden
-                hideTypingText();
+                        setTimeout(() => {
+                            showTypingText();
 
-                // Handle special actions from backend
-                if (response.action === 'open_contact_form') {
-                    addBotMessage(response.message);
                             setTimeout(() => {
+                                hideTypingText();
+
+                                const now = Date.now();
+                                const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                                if (isGrouped) {
+                                    markPreviousBotAsGrouped();
+                                }
+                                lastBotMessageTime = now;
+
+                                const appointmentMsg = document.createElement('div');
+                                appointmentMsg.className = isGrouped ? 'message bot grouped' : 'message bot';
+                                appointmentMsg.innerHTML = `
+                                    <div class="message-avatar">
+                                        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                                <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                                <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                                      fill="white" stroke="white" stroke-width="0"/>
+                                                <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                                <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="message-content">
+                                            Gerne! Hier sind drei verfügbare Termine:
+                                            <div class="quick-actions-message">
+                                                <button class="quick-action-chat-btn" onclick="selectAppointment('Montag, 28.10 · 10:00')">
+                                                    Montag, 28.10 · 10:00
+                                                </button>
+                                                <button class="quick-action-chat-btn" onclick="selectAppointment('Mittwoch, 30.10 · 14:30')">
+                                                    Mittwoch, 30.10 · 14:30
+                                                </button>
+                                                <button class="quick-action-chat-btn" onclick="selectAppointment('Freitag, 01.11 · 09:00')">
+                                                    Freitag, 01.11 · 09:00
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="message-timestamp">
+                                            <span>${getCurrentTime()}</span>
+                                            <span class="feedback-separator">·</span>
+                                            <div class="feedback-buttons">
+                                                <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                                    </svg>
+                                                </button>
+                                                <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                chatMessages.appendChild(appointmentMsg);
+                                lastBotMessageElement = appointmentMsg;
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }, 1500);
+                        }, 500);
+                    } else {
+                        // Zweiter/weiterer Termin-Request: Zeige alternative Antwort
+                        setTimeout(() => {
+                            showTypingText();
+
+                            setTimeout(() => {
+                                hideTypingText();
+
+                                const now = Date.now();
+                                const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                                if (isGrouped) {
+                                    markPreviousBotAsGrouped();
+                                }
+                                lastBotMessageTime = now;
+
+                                const responseMsg = document.createElement('div');
+                                responseMsg.className = isGrouped ? 'message bot grouped' : 'message bot';
+                                responseMsg.innerHTML = `
+                                    <div class="message-avatar">
+                                        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                                <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                                <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                                      fill="white" stroke="white" stroke-width="0"/>
+                                                <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                                <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="message-content">
+                                            Sie haben bereits einen Termin ausgewählt. Unser Team wird sich bei Ihnen melden, um die Details zu besprechen. Kann ich Ihnen sonst noch weiterhelfen?
+                                        </div>
+                                        <div class="message-timestamp">
+                                            <span>${getCurrentTime()}</span>
+                                            <span class="feedback-separator">·</span>
+                                            <div class="feedback-buttons">
+                                                <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                                    </svg>
+                                                </button>
+                                                <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                chatMessages.appendChild(responseMsg);
+                                lastBotMessageElement = responseMsg;
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }, 1500);
+                        }, 500);
+                    }
+                }
+
+                // Prüfe auf Custom-Date (unabhängig von "termin" Keyword)
+                if (terminPickerShown && !message.toLowerCase().includes('termin')) {
+                    const customDatePattern = /(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag).*?(\d{1,2}[:.]?\d{0,2}|morgens?|mittags?|nachmittags?|abends?)/i;
+                    if (customDatePattern.test(message)) {
+                        // Custom Date erkannt - zeige Buchungsformular
+                        // Formatiere die User-Eingabe als Termin
+                        const formattedAppointment = message.trim();
+
+                        setTimeout(() => {
+                            showTypingText();
+
+                            setTimeout(() => {
+                                hideTypingText();
+
+                                const now = Date.now();
+                                const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                                if (isGrouped) {
+                                    markPreviousBotAsGrouped();
+                                }
+                                lastBotMessageTime = now;
+
+                                // Bot-Nachricht mit Buchungsformular
+                                const formMessage = document.createElement('div');
+                                formMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                                formMessage.innerHTML = `
+                                    <div class="message-avatar">
+                                        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                                <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                                <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                                      fill="white" stroke="white" stroke-width="0"/>
+                                                <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                                <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="message-content">
+                                            Perfekt! Bitte geben Sie Ihre Kontaktdaten ein:
+                                            <div class="booking-form" id="bookingFormContainer">
+                                                <input type="text" class="booking-input" id="bookingName" placeholder="Name">
+                                                <div class="error-message" id="nameError" style="display: none;">Bitte geben Sie einen gültigen Namen ein (mind. 2 Zeichen)</div>
+                                                <input type="email" class="booking-input" id="bookingEmail" placeholder="E-Mail-Adresse">
+                                                <div class="error-message" id="emailError" style="display: none;">Bitte geben Sie eine gültige E-Mail-Adresse ein</div>
+                                                <div class="privacy-checkbox-wrapper">
+                                                    <input type="checkbox" class="privacy-checkbox" id="privacyCheckbox">
+                                                    <label for="privacyCheckbox" class="privacy-checkbox-label">
+                                                        Ich akzeptiere die <a href="#" onclick="event.preventDefault()">Datenschutzerklärung</a>
+                                                    </label>
+                                                </div>
+                                                <div class="error-message" id="privacyError" style="display: none;">Bitte akzeptieren Sie die Datenschutzerklärung</div>
+                                                <button class="booking-submit" id="bookingSubmitBtn" onclick="submitBooking('${formattedAppointment}')">Termin buchen</button>
+                                            </div>
+                                        </div>
+                                        <div class="message-timestamp">
+                                            <span>${getCurrentTime()}</span>
+                                            <span class="feedback-separator">·</span>
+                                            <div class="feedback-buttons">
+                                                <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                                    </svg>
+                                                </button>
+                                                <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
+                                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                chatMessages.appendChild(formMessage);
+                                lastBotMessageElement = formMessage;
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }, 1500);
+                        }, 500);
+                    }
+                }
+
+                // Prüfe auf "kontakt" und öffne Kontaktformular
+                if (message.toLowerCase().includes('kontakt')) {
+                    setTimeout(() => {
                         openContactForm();
                     }, 500);
-                    return;
                 }
 
-                if (response.action === 'termin') {
-                    // Für später: Termin-Flow
-                    const input = document.getElementById('messageInput');
-                    input.value = 'termin';
-                    sendMessage();
-                    return;
-                }
+                // Prüfe auf Trigger-Wörter für Final Feedback
+                const feedbackTriggerWords = [
+                    'danke', 'dankeschön', 'vielen dank', 'super', 'perfekt',
+                    'toll', 'prima', 'geholfen', 'hilft', 'hilfreich',
+                    'erledigt', 'reicht', 'passt', 'gut', 'alles klar',
+                    'okay', 'ok', 'genug', 'fertig', 'tschüss', 'bis dann',
+                    'auf wiedersehen', 'ciao', 'bye', 'danke dir'
+                ];
 
-                if (response.action === 'slot_selection' && response.slots) {
-                    addBotMessage(response.message);
-                    displaySlotButtons(response.slots);
-                    
-                    // Zeige Hinweis-Nachricht nach kurzer Verzögerung
-                    if (response.additional_message) {
-                        setTimeout(() => {
-                            addBotMessage(response.additional_message);
-                        }, 800);
-                    }
-                    
-                    return;
-                }
+                const messageLower = message.toLowerCase();
+                const hasTriggerWord = feedbackTriggerWords.some(word => messageLower.includes(word));
 
-                // Bot-Antwort anzeigen
-                if (response.message) {
-                    addBotMessage(response.message);
+                if (hasTriggerWord) {
+                    showFinalFeedback();
                 }
-
-                // NEU: Action Handler für Contact Forms
-                if (response.actions && response.actions.length > 0) {
-                    const action = response.actions[0];
-                    console.log('📋 Processing action:', action);
-                    
-                    // BOOKING Contact Form (für Terminbuchung)
-                    if (action.type === 'contact_form' && action.form) {
-                        console.log('📝 Displaying booking contact form:', action.form);
-                        setTimeout(() => {
-                            displayBookingContactForm(action.form); // ← BOOKING-spezifische Funktion
-                        }, 500);
-                        return; // Wichtig: Verhindert weitere Message-Verarbeitung
-                    }
-                }
-
-                // Quick Replies anzeigen (falls vorhanden)
-                if (response.quick_replies && response.quick_replies.length > 0) {
-                    addQuickReplies(response.quick_replies);
-                }
-
-                // Wenn requires_booking Flag gesetzt ist, könnte hier Buchungslogik ausgelöst werden
-                // Dies hängt davon ab, wie das Backend strukturiert ist
-
-            } catch (error) {
-                // Typing-Indikator ausblenden
-                hideTypingText();
-
-                // Fehlermeldung anzeigen
-                showErrorMessage(error.message);
-                
-                console.error('Fehler beim Senden der Nachricht:', error);
-            }
-        }
-
-        // ============================================
-        // BOOKING CONTACT FORM (für Terminbuchung)
-        // ============================================
-        
-        /**
-         * Zeigt ein dynamisches Kontaktformular für Terminbuchungen an
-         * Verbesserte Version mit Validierung, keine Labels, Formular bleibt sichtbar
-         * @param {Object} formConfig - Formular-Konfiguration mit fields, submit_label, submit_message
-         */
-        function displayBookingContactForm(formConfig) {
-            console.log('=== displayBookingContactForm called ===');
-            
-            const chatMessages = document.getElementById('chatMessages');
-            const now = Date.now();
-            
-            if (!chatMessages) {
-                console.error('❌ chatMessages element not found!');
-                return;
-            }
-            
-            // Prüfe ob Nachricht gruppiert werden soll (innerhalb 10 Sekunden)
-            const shouldGroup = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
-            
-            if (shouldGroup) {
-                markPreviousBotAsGrouped();
-            }
-            
-            lastBotMessageTime = now;
-            
-            // Erstelle Bot-Message Container
-            const botMessage = document.createElement('div');
-            botMessage.className = shouldGroup ? 'message bot grouped' : 'message bot';
-            
-            // Message Content Wrapper
-            const messageContentWrapper = document.createElement('div');
-            
-            // Erstelle das Formular
-            const form = document.createElement('form');
-            form.id = 'bookingContactForm';
-            form.noValidate = true; // Custom validation
-            form.style.cssText = 'display: flex; flex-direction: column; gap: 12px;';
-            
-            // Error Message Container (initially hidden)
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
-                display: none;
-                padding: 10px 12px;
-                background: #fee;
-                border-left: 3px solid #f44;
-                border-radius: 6px;
-                font-size: 13px;
-                color: #c33;
-                margin-bottom: 4px;
-            `;
-            form.appendChild(errorDiv);
-            
-            // Erstelle Input-Felder (OHNE Labels!)
-            formConfig.fields.forEach((field, index) => {
-                const input = document.createElement('input');
-                input.type = field.type;
-                input.id = `booking_${field.id}`;
-                input.name = field.id;
-                input.placeholder = field.placeholder; // Nur Placeholder, kein Label!
-                input.required = field.required;
-                input.style.cssText = `
-                    width: 100%;
-                    padding: 12px 14px;
-                    border: 1.5px solid #e0e0e0;
-                    border-radius: 8px;
-                    font-size: 14px;
-                    font-family: inherit;
-                    color: #374151;
-                    background: white;
-                    transition: all 0.2s ease;
-                    box-sizing: border-box;
-                `;
-                
-                if (field.minLength) {
-                    input.minLength = field.minLength;
-                }
-                
-                // Note: Event listeners werden nach innerHTML neu angehängt
-                form.appendChild(input);
-            });
-            
-            // Datenschutzerklärung mit Checkbox
-            const privacyContainer = document.createElement('div');
-            privacyContainer.id = 'privacyContainer';
-            privacyContainer.style.cssText = `
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-top: 4px;
-            `;
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = 'privacyCheckbox';
-            checkbox.required = true;
-            checkbox.style.cssText = `
-                cursor: pointer;
-                width: 16px;
-                height: 16px;
-                accent-color: #B7483E;
-                flex-shrink: 0;
-            `;
-            
-            const privacyLabel = document.createElement('label');
-            privacyLabel.htmlFor = 'privacyCheckbox';
-            privacyLabel.style.cssText = `
-                font-size: 12px;
-                color: #666;
-                line-height: 1.4;
-                cursor: pointer;
-                user-select: none;
-            `;
-            privacyLabel.innerHTML = `Ich akzeptiere die <a href="/datenschutz" target="_blank" style="color: #B7483E; text-decoration: none;">Datenschutzerklärung</a>`;
-            
-            privacyContainer.appendChild(checkbox);
-            privacyContainer.appendChild(privacyLabel);
-            form.appendChild(privacyContainer);
-            
-            // Submit Button
-            const submitBtn = document.createElement('button');
-            submitBtn.type = 'submit';
-            submitBtn.textContent = formConfig.submit_label || 'Absenden';
-            submitBtn.style.cssText = `
-                width: 100%;
-                padding: 12px 20px;
-                background: #B7483E;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-weight: 600;
-                font-size: 14px;
-                font-family: inherit;
-                margin-top: 8px;
-                transition: background 0.2s ease;
-                opacity: 1;
-            `;
-            
-            // Note: Button Event listeners werden nach innerHTML neu angehängt
-            form.appendChild(submitBtn);
-            
-            // Form Submit Handler
-            const submitHandler = (e) => {
-                e.preventDefault();
-                
-                // Validation
-                const formData = {};
-                let hasError = false;
-                let errorMessage = '';
-                
-                // Check privacy checkbox
-                const privacyCheckbox = document.getElementById('privacyCheckbox');
-                if (!privacyCheckbox.checked) {
-                    hasError = true;
-                    errorMessage = 'Bitte akzeptiere die Datenschutzerklärung.';
-                    errorDiv.textContent = errorMessage;
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-                
-                formConfig.fields.forEach(field => {
-                    const input = document.getElementById(`booking_${field.id}`);
-                    const value = input.value.trim();
-                    
-                    if (field.required && !value) {
-                        hasError = true;
-                        errorMessage = `Bitte fülle das Feld "${field.placeholder}" aus.`;
-                        input.style.borderColor = '#f44';
-                        return;
-                    }
-                    
-                    if (field.type === 'email' && value) {
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (!emailRegex.test(value)) {
-                            hasError = true;
-                            errorMessage = 'Bitte gib eine gültige E-Mail-Adresse ein.';
-                            input.style.borderColor = '#f44';
-                            return;
-                        }
-                    }
-                    
-                    if (field.minLength && value.length < field.minLength) {
-                        hasError = true;
-                        errorMessage = `${field.placeholder} muss mindestens ${field.minLength} Zeichen haben.`;
-                        input.style.borderColor = '#f44';
-                        return;
-                    }
-                    
-                    formData[field.id] = value;
-                });
-                
-                // Show error if validation failed
-                if (hasError) {
-                    errorDiv.textContent = errorMessage;
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-                
-                console.log('Form submitted:', formData);
-                
-                // Disable all inputs (make readonly) - STÄRKER AUSGRAUEN
-                formConfig.fields.forEach(field => {
-                    const input = document.getElementById(`booking_${field.id}`);
-                    input.readOnly = true;
-                    input.style.background = '#f3f3f3';
-                    input.style.cursor = 'not-allowed';
-                    input.style.borderColor = '#d0d0d0';
-                    input.style.color = '#888';
-                    input.style.opacity = '0.7';
-                });
-                
-                // Disable checkbox (bleibt sichtbar und checked)
-                const privacyCheckboxEl = document.getElementById('privacyCheckbox');
-                if (privacyCheckboxEl) {
-                    privacyCheckboxEl.disabled = true;
-                    privacyCheckboxEl.style.cursor = 'not-allowed';
-                }
-                
-                // Datenschutz-Text bleibt sichtbar, nur etwas transparenter
-                const privacyContainerEl = document.getElementById('privacyContainer');
-                if (privacyContainerEl) {
-                    privacyContainerEl.style.opacity = '0.6';
-                }
-                
-                // Smooth remove button - Hole Button aus DOM
-                const submitButton = document.querySelector('#bookingContactForm button[type="submit"]');
-                if (submitButton) {
-                    const btnHeight = submitButton.offsetHeight;
-                    submitButton.style.maxHeight = btnHeight + 'px';
-                    submitButton.style.overflow = 'hidden';
-                    submitButton.style.transition = 'opacity 0.3s ease, max-height 0.4s ease 0.3s, margin-top 0.4s ease 0.3s, padding 0.4s ease 0.3s';
-                    submitButton.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        submitButton.style.maxHeight = '0';
-                        submitButton.style.marginTop = '0';
-                        submitButton.style.paddingTop = '0';
-                        submitButton.style.paddingBottom = '0';
-                        
-                        setTimeout(() => {
-                            submitButton.remove();
-                        }, 400);
-                    }, 300);
-                }
-                
-                // WICHTIG: Keine addUserMessage() aufrufen!
-                // Das Formular bleibt sichtbar mit den ausgefüllten Daten
-                
-                // Sende Daten an Backend
-                sendBookingData(formData);
-            };
-            
-            // Timestamp erstellen
-            const timestampHTML = `
-                <div class="message-timestamp">
-                    <span>${getCurrentTime()}</span>
-                </div>
-            `;
-            
-            // Bot-Message zusammenbauen
-            botMessage.innerHTML = `
-                <div class="message-avatar">
-                    ${getBotAvatarHTML()}
-                </div>
-                <div>
-                    <div class="message-content">
-                        ${form.outerHTML}
-                    </div>
-                    ${timestampHTML}
-                </div>
-            `;
-            
-            // Event-Listener nach dem Einfügen erneut anhängen
-            chatMessages.appendChild(botMessage);
-            
-            // Form neu referenzieren und alle Event-Listener neu anhängen
-            const insertedForm = botMessage.querySelector('#bookingContactForm');
-            if (insertedForm) {
-                // Error Div Referenz
-                const errorDiv = insertedForm.querySelector('div[style*="display: none"]');
-                
-                // Submit Handler
-                insertedForm.addEventListener('submit', submitHandler);
-                
-                // Input Events KOMPLETT NEU definieren und anhängen
-                formConfig.fields.forEach(field => {
-                    const input = document.getElementById(`booking_${field.id}`);
-                    if (input) {
-                        // Focus Handler - Background bleibt weiß
-                        input.addEventListener('focus', () => {
-                            input.style.borderColor = 'rgba(183, 72, 62, 0.4)';
-                            input.style.boxShadow = '0 0 0 3px rgba(183, 72, 62, 0.08)';
-                            input.style.outline = 'none';
-                            input.style.background = '#FFFFFF';
-                        });
-                        
-                        // Blur Handler
-                        input.addEventListener('blur', () => {
-                            input.style.borderColor = '#e0e0e0';
-                            input.style.boxShadow = 'none';
-                            input.style.background = 'white';
-                        });
-                        
-                        // Input Handler
-                        input.addEventListener('input', () => {
-                            input.style.borderColor = 'rgba(183, 72, 62, 0.4)';
-                            if (errorDiv) errorDiv.style.display = 'none';
-                        });
-                    }
-                });
-                
-                // Button Hover Events - Nur fill dunkler, kein Y-offset, kein Shadow
-                const btn = insertedForm.querySelector('button[type="submit"]');
-                if (btn) {
-                    btn.addEventListener('mouseenter', () => {
-                        btn.style.background = '#a03d33';
-                    });
-                    
-                    btn.addEventListener('mouseleave', () => {
-                        btn.style.background = '#B7483E';
-                    });
-                }
-            }
-            
-            lastBotMessageElement = botMessage;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // Auto-focus erstes Feld
-            setTimeout(() => {
-                const firstInput = insertedForm?.querySelector('input');
-                if (firstInput) firstInput.focus();
-            }, 100);
-        }
-
-        // ============================================
-        // BOOKING DATA SUBMISSION
-        // ============================================
-        
-        /**
-         * Sendet die ausgefüllten Kontaktdaten an das Backend
-         * @param {Object} formData - Die gesammelten Formulardaten
-         */
-        async function sendBookingData(formData) {
-            console.log('📤 Sending booking data:', formData);
-            
-            // Typing-Indikator anzeigen
-            showTypingText();
-            
-            try {
-                // Verwende apiCall() für konsistentes Error-Handling
-                const data = await apiCall(API_CONFIG.endpoints.chat, {
-                    content: '__BOOKING_SUBMIT__',
-                    session_id: getOrCreateSessionId(),
-                    booking_data: formData
-                });
-                
-                console.log('✅ Booking response:', data);
-                
-                // Typing-Indikator ausblenden
-                hideTypingText();
-                
-                // Zeige Bot-Antwort
-                if (data.message) {
-                    addBotMessage(data.message);
-                }
-                
-                // Handle weitere Actions falls vorhanden
-                if (data.actions && data.actions.length > 0) {
-                    const action = data.actions[0];
-                    console.log('📋 Additional actions after booking:', action);
-                    
-                    // Hier könnten weitere Actions verarbeitet werden
-                    if (action.type === 'contact_form' && action.form) {
-                        setTimeout(() => {
-                            displayBookingContactForm(action.form);
-                        }, 500);
-                    }
-                }
-                
-            } catch (error) {
-                console.error('❌ Booking error:', error);
-                
-                // Typing-Indikator ausblenden
-                hideTypingText();
-                
-                // Zeige Fehlermeldung
-                showErrorMessage('Es gab einen Fehler beim Buchen. Bitte versuche es erneut.');
             }
         }
 
@@ -4262,7 +3527,7 @@
             }, 1000);
         }
 
-        async function handleFinalFeedback(response) {
+        function handleFinalFeedback(response) {
             console.log('Final Feedback:', response);
 
             const chatMessages = document.getElementById('chatMessages');
@@ -4299,22 +3564,7 @@
                 return; // Input-Feld bleibt offen bis User Submit-Button drückt
             }
 
-            // Bei "Ja": Feedback an API senden
-            try {
-                await apiCall(API_CONFIG.endpoints.feedback, {
-                    session_id: getOrCreateSessionId(),
-                    rating: 5,
-                    type: 'resolution',
-                    comment: ''
-                });
-
-                console.log('Positives Feedback erfolgreich gesendet');
-            } catch (error) {
-                console.error('Feedback konnte nicht gesendet werden:', error);
-                // Auch bei Fehler fortfahren (Feedback ist optional)
-            }
-
-            // Feedback-Nachricht schließen
+            // Bei "Ja": Feedback-Nachricht schließen
             proceedWithFeedbackResponse(response);
         }
 
@@ -4331,24 +3581,12 @@
             }
         }
 
-        async function submitNegativeFeedback() {
+        function submitNegativeFeedback() {
             const feedbackInput = document.getElementById('feedbackInput');
             const feedbackText = feedbackInput ? feedbackInput.value.trim() : '';
 
-            // API-Call mit negativem Feedback
-            try {
-                await apiCall(API_CONFIG.endpoints.feedback, {
-                    session_id: getOrCreateSessionId(),
-                    rating: 1,
-                    type: 'resolution',
-                    comment: feedbackText
-                });
-
-                console.log('Negatives Feedback erfolgreich gesendet');
-            } catch (error) {
-                console.error('Feedback konnte nicht gesendet werden:', error);
-                // Auch bei Fehler fortfahren (Feedback ist optional)
-            }
+            console.log('Negative Feedback Text:', feedbackText);
+            // Hier könnte der Text an Backend gesendet werden
 
             // Feedback-Nachricht entfernen und Antwort zeigen
             proceedWithFeedbackResponse('no');
@@ -4484,7 +3722,9 @@
             }
 
             if (isValid) {
-                // Inputs deaktivieren während API-Call
+                console.log('Kontaktformular:', { name, email, message });
+
+                // Inputs deaktivieren
                 nameInput.disabled = true;
                 emailInput.disabled = true;
                 messageInput.disabled = true;
@@ -4493,23 +3733,9 @@
                 // Submit-Button deaktivieren
                 const submitBtn = document.getElementById('contactSubmitBtn');
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Wird gesendet...';
-
-                // API-Call
-                (async () => {
-                    try {
-                        const response = await apiCall(API_CONFIG.endpoints.handover, {
-                            session_id: getOrCreateSessionId(),
-                            reason: 'Kontaktanfrage',
-                            customer_name: name,
-                            customer_email: email,
-                            customer_message: message
-                        });
-
-                        // Erfolg: Button-Text ändern
                 submitBtn.textContent = 'Gesendet ✓';
 
-                        // Nach kurzem Delay zurück zum Chat
+                // Nach 2 Sekunden zurück zum Chat mit Bestätigungsnachricht
                 setTimeout(() => {
                     closeContactForm();
 
@@ -4529,25 +3755,64 @@
                         submitBtn.textContent = 'Nachricht senden';
                     }, 500);
 
-                            // Typing-Indikator anzeigen
+                    // Bestätigungsnachricht im Chat hinzufügen
+                    const chatMessages = document.getElementById('chatMessages');
+
                     setTimeout(() => {
                         showTypingText();
 
                         setTimeout(() => {
                             hideTypingText();
 
-                                    // Bestätigungsnachricht anzeigen
-                                    if (response.message) {
-                                        addBotMessage(response.message);
-                                    } else {
-                                        // Fallback-Nachricht
-                                        addBotMessage(`Vielen Dank für Ihre Nachricht! Unser Team wird sich schnellstmöglich bei Ihnen unter <span style="color: #B7483E;">${email}</span> melden.`);
-                                    }
+                            const now = Date.now();
+                            const isGrouped = lastBotMessageTime && (now - lastBotMessageTime) < 10000;
+                            if (isGrouped) {
+                                markPreviousBotAsGrouped();
+                            }
+                            lastBotMessageTime = now;
+
+                            const confirmMessage = document.createElement('div');
+                            confirmMessage.className = isGrouped ? 'message bot grouped' : 'message bot';
+                            confirmMessage.innerHTML = `
+                                <div class="message-avatar">
+                                    <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g transform="translate(25, 25) rotate(2) translate(-25, -25) translate(4, 12)">
+                                            <rect x="0" y="0" width="42" height="26" rx="2.5" fill="white"/>
+                                            <path d="M 20 25 Q 20 25, 20.8 25.8 L 26 32 Q 26.5 32.5, 27 32 L 32.2 25.8 Q 33 25, 33 25 Z"
+                                                  fill="white" stroke="white" stroke-width="0"/>
+                                            <ellipse cx="13" cy="16" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                            <ellipse cx="20" cy="17" rx="2.8" ry="2.8" fill="#B7483E"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="message-content">
+                                        Vielen Dank für Ihre Nachricht! Unser Team wird sich schnellstmöglich bei Ihnen unter <span style="color: #B7483E;">${email}</span> melden.
+                                    </div>
+                                    <div class="message-timestamp">
+                                        <span>${getCurrentTime()}</span>
+                                        <span class="feedback-separator">·</span>
+                                        <div class="feedback-buttons">
+                                            <button class="feedback-btn" onclick="handleFeedback('up', this)" title="Hilfreich">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7 22V11M2 13V20C2 21.1046 2.89543 22 4 22H16.4262C17.907 22 19.1662 20.9197 19.3914 19.4562L20.4683 12.4562C20.7479 10.6389 19.3418 9 17.5032 9H14V4C14 2.89543 13.1046 2 12 2C11.4477 2 11 2.44772 11 3V3.56597C11 3.99187 10.8935 4.40959 10.6912 4.77974L7.34164 10.1478C7.12324 10.5412 6.67028 10.7649 6.19298 10.7138L4.27279 10.5028C3.02479 10.3796 2 11.3667 2 12.6197V13Z"/>
+                                                </svg>
+                                            </button>
+                                            <button class="feedback-btn" onclick="handleFeedback('down', this)" title="Nicht hilfreich">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M17 2V13M22 11V4C22 2.89543 21.1046 2 20 2H7.57377C6.09299 2 4.83375 3.08027 4.6086 4.54383L3.53165 11.5438C3.25211 13.3611 4.65821 15 6.49678 15H10V20C10 21.1046 10.8954 22 12 22C12.5523 22 13 21.5523 13 21V20.434C13 20.0081 13.1065 19.5904 13.3088 19.2203L16.6584 13.8522C16.8768 13.4588 17.3297 13.2351 17.807 13.2862L19.7272 13.4972C20.9752 13.6204 22 12.6333 22 11.3803V11Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            chatMessages.appendChild(confirmMessage);
+                            lastBotMessageElement = confirmMessage;
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
 
                             // Final Feedback nach Kontakt-Nachricht anzeigen
-                                    setTimeout(() => {
                             showFinalFeedback();
-                                    }, 1000);
 
                             // "Kontaktformular öffnen" Button verstecken
                             const contactHandoverBtn = document.querySelector('.contact-handover-btn');
@@ -4556,23 +3821,7 @@
                             }
                         }, 1500);
                     }, 500);
-                        }, 1000);
-
-                    } catch (error) {
-                        // Fehler: Inputs wieder aktivieren
-                        nameInput.disabled = false;
-                        emailInput.disabled = false;
-                        messageInput.disabled = false;
-                        privacyCheckbox.disabled = false;
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Nachricht senden';
-
-                        // Fehlermeldung anzeigen
-                        alert('Die Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.');
-                        
-                        console.error('Fehler beim Senden der Kontakt-Nachricht:', error);
-                    }
-                })();
+                }, 2000);
             }
         }
 
