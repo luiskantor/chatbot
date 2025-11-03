@@ -3515,10 +3515,13 @@
 
             try {
                 // API-Call zum Chat-Endpoint
+                console.log('📤 Sending message:', message, 'Session:', getOrCreateSessionId());
                 const response = await apiCall(API_CONFIG.endpoints.chat, {
                     content: message,
                     session_id: getOrCreateSessionId()
                 });
+                
+                console.log('✅ Received response:', response);
 
                 // Typing-Indikator ausblenden
                 hideTypingText();
@@ -3562,11 +3565,11 @@
                 // NEU: Action Handler für Contact Forms
                 if (response.actions && response.actions.length > 0) {
                     const action = response.actions[0];
-                    console.log('Processing action:', action);
+                    console.log('📋 Processing action:', action);
                     
                     // BOOKING Contact Form (für Terminbuchung)
                     if (action.type === 'contact_form' && action.form) {
-                        console.log('Displaying booking contact form:', action.form);
+                        console.log('📝 Displaying booking contact form:', action.form);
                         setTimeout(() => {
                             displayBookingContactForm(action.form); // ← BOOKING-spezifische Funktion
                         }, 500);
@@ -3955,33 +3958,20 @@
          * @param {Object} formData - Die gesammelten Formulardaten
          */
         async function sendBookingData(formData) {
-            const sessionId = localStorage.getItem('session_id');
-            
-            console.log('Sending booking data:', formData);
+            console.log('📤 Sending booking data:', formData);
             
             // Typing-Indikator anzeigen
             showTypingText();
             
             try {
-                const response = await fetch('https://workflow.kantorlab.de/webhook/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        content: '__BOOKING_SUBMIT__',
-                        session_id: sessionId,
-                        booking_data: formData
-                    })
+                // Verwende apiCall() für konsistentes Error-Handling
+                const data = await apiCall(API_CONFIG.endpoints.chat, {
+                    content: '__BOOKING_SUBMIT__',
+                    session_id: getOrCreateSessionId(),
+                    booking_data: formData
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                console.log('Booking response:', data);
+                console.log('✅ Booking response:', data);
                 
                 // Typing-Indikator ausblenden
                 hideTypingText();
@@ -3994,7 +3984,7 @@
                 // Handle weitere Actions falls vorhanden
                 if (data.actions && data.actions.length > 0) {
                     const action = data.actions[0];
-                    console.log('Additional actions after booking:', action);
+                    console.log('📋 Additional actions after booking:', action);
                     
                     // Hier könnten weitere Actions verarbeitet werden
                     if (action.type === 'contact_form' && action.form) {
@@ -4005,13 +3995,13 @@
                 }
                 
             } catch (error) {
-                console.error('Booking error:', error);
+                console.error('❌ Booking error:', error);
                 
                 // Typing-Indikator ausblenden
                 hideTypingText();
                 
                 // Zeige Fehlermeldung
-                addBotMessage('Es gab einen Fehler beim Buchen. Bitte versuche es erneut.');
+                showErrorMessage('Es gab einen Fehler beim Buchen. Bitte versuche es erneut.');
             }
         }
 
