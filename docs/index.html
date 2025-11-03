@@ -3690,7 +3690,7 @@
             privacyContainer.id = 'privacyContainer';
             privacyContainer.style.cssText = `
                 display: flex;
-                align-items: flex-start;
+                align-items: center;
                 gap: 8px;
                 margin-top: 4px;
             `;
@@ -3700,11 +3700,11 @@
             checkbox.id = 'privacyCheckbox';
             checkbox.required = true;
             checkbox.style.cssText = `
-                margin-top: 2px;
                 cursor: pointer;
                 width: 16px;
                 height: 16px;
                 accent-color: #B7483E;
+                flex-shrink: 0;
             `;
             
             const privacyLabel = document.createElement('label');
@@ -3738,10 +3738,8 @@
                 font-size: 14px;
                 font-family: inherit;
                 margin-top: 8px;
-                transition: all 0.3s ease;
+                transition: background 0.2s ease;
                 opacity: 1;
-                transform: translateY(0);
-                box-shadow: 0 2px 8px rgba(183, 72, 62, 0.15);
             `;
             
             // Note: Button Event listeners werden nach innerHTML neu angehängt
@@ -3829,26 +3827,23 @@
                     privacyContainer.style.display = 'none';
                 }, 300);
                 
-                // Smooth remove button with VERBESSERTER animation
-                submitBtn.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                // Smooth remove button - Opacity + Height animation
+                const btnHeight = submitBtn.offsetHeight;
+                submitBtn.style.maxHeight = btnHeight + 'px';
+                submitBtn.style.overflow = 'hidden';
+                submitBtn.style.transition = 'opacity 0.3s ease, max-height 0.4s ease 0.3s, margin-top 0.4s ease 0.3s, padding 0.4s ease 0.3s';
                 submitBtn.style.opacity = '0';
-                submitBtn.style.transform = 'translateY(-15px) scale(0.9)';
                 
                 setTimeout(() => {
-                    submitBtn.style.maxHeight = submitBtn.offsetHeight + 'px';
-                    submitBtn.style.overflow = 'hidden';
+                    submitBtn.style.maxHeight = '0';
+                    submitBtn.style.marginTop = '0';
+                    submitBtn.style.paddingTop = '0';
+                    submitBtn.style.paddingBottom = '0';
                     
                     setTimeout(() => {
-                        submitBtn.style.maxHeight = '0';
-                        submitBtn.style.marginTop = '0';
-                        submitBtn.style.paddingTop = '0';
-                        submitBtn.style.paddingBottom = '0';
-                        
-                        setTimeout(() => {
-                            submitBtn.remove();
-                        }, 400);
-                    }, 50);
-                }, 400);
+                        submitBtn.remove();
+                    }, 400);
+                }, 300);
                 
                 // WICHTIG: Keine addUserMessage() aufrufen!
                 // Das Formular bleibt sichtbar mit den ausgefüllten Daten
@@ -3893,12 +3888,12 @@
                 formConfig.fields.forEach(field => {
                     const input = document.getElementById(`booking_${field.id}`);
                     if (input) {
-                        // Focus Handler
+                        // Focus Handler - Background bleibt weiß
                         input.addEventListener('focus', () => {
                             input.style.borderColor = 'rgba(183, 72, 62, 0.4)';
                             input.style.boxShadow = '0 0 0 3px rgba(183, 72, 62, 0.08)';
                             input.style.outline = 'none';
-                            input.style.background = 'rgba(183, 72, 62, 0.02)';
+                            input.style.background = '#FFFFFF';
                         });
                         
                         // Blur Handler
@@ -3916,29 +3911,15 @@
                     }
                 });
                 
-                // Button Hover Events KOMPLETT NEU definieren und anhängen
+                // Button Hover Events - Nur fill dunkler, kein Y-offset, kein Shadow
                 const btn = insertedForm.querySelector('button[type="submit"]');
                 if (btn) {
                     btn.addEventListener('mouseenter', () => {
                         btn.style.background = '#a03d33';
-                        btn.style.transform = 'translateY(-2px)';
-                        btn.style.boxShadow = '0 6px 20px rgba(183, 72, 62, 0.35)';
                     });
                     
                     btn.addEventListener('mouseleave', () => {
                         btn.style.background = '#B7483E';
-                        btn.style.transform = 'translateY(0)';
-                        btn.style.boxShadow = '0 2px 8px rgba(183, 72, 62, 0.15)';
-                    });
-                    
-                    btn.addEventListener('mousedown', () => {
-                        btn.style.transform = 'translateY(0) scale(0.98)';
-                        btn.style.boxShadow = '0 1px 4px rgba(183, 72, 62, 0.2)';
-                    });
-                    
-                    btn.addEventListener('mouseup', () => {
-                        btn.style.transform = 'translateY(-2px)';
-                        btn.style.boxShadow = '0 6px 20px rgba(183, 72, 62, 0.35)';
                     });
                 }
             }
