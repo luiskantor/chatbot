@@ -3815,22 +3815,17 @@
                     input.style.opacity = '0.7';
                 });
                 
-                // Disable checkbox
+                // Disable checkbox (bleibt sichtbar und checked)
                 const privacyCheckboxEl = document.getElementById('privacyCheckbox');
                 if (privacyCheckboxEl) {
                     privacyCheckboxEl.disabled = true;
                     privacyCheckboxEl.style.cursor = 'not-allowed';
-                    privacyCheckboxEl.style.opacity = '0.5';
                 }
                 
-                // Hide privacy container with fade
+                // Datenschutz-Text bleibt sichtbar, nur etwas transparenter
                 const privacyContainerEl = document.getElementById('privacyContainer');
                 if (privacyContainerEl) {
-                    privacyContainerEl.style.transition = 'opacity 0.3s ease';
-                    privacyContainerEl.style.opacity = '0';
-                    setTimeout(() => {
-                        privacyContainerEl.style.display = 'none';
-                    }, 300);
+                    privacyContainerEl.style.opacity = '0.6';
                 }
                 
                 // Smooth remove button - Hole Button aus DOM
